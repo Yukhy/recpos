@@ -1,2 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+*.pyc
+.vscode
+*.swp
+*.sqlite3
+__pycache__
+.DS_Store
