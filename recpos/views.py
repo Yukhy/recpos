@@ -6,3 +6,6 @@ from django.shortcuts import render
 
 def index(request):
     return render(request, 'recpos/index.html')
+
+def mailbox(request):
+    return render(request, 'recpos/mailbox.html')

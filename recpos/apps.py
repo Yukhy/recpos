@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MainFuncConfig(AppConfig):
+class RecposConfig(AppConfig):
     name = 'recpos'
