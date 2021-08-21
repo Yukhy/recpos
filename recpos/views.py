@@ -9,3 +9,6 @@ def index(request):
 
 def mailbox(request):
     return render(request, 'recpos/mailbox.html')
+
+def login(request):
+    return render(request, 'recpos/tmpLogin.html')
