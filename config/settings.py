@@ -123,10 +123,13 @@ STATIC_URL = '/static/'
 
 
 # ユーザー認証用に追加
-
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'accounts:top'
+LOGIN_REDIRECT_URL = 'recpos:index'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# Gmail API用に追加
+GMAIL_API_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
