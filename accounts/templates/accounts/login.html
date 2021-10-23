@@ -14,7 +14,7 @@
                     {{ field.errors }}
                     <br>
                     {% endfor %}
-                    <a href="{% url 'accounts:user_create' %}" class="btn btn-secondary btn-block">会員登録</a>
+                    <a href="{% url 'accounts:user_create' %}" class="btn btn-secondary btn-block">サインアップ</a>
                     <button type="submit" class="btn btn-primary btn-block">ログイン</button>
                     <input type="hidden" name="next" value="{{ next }}" />
                     {% csrf_token %}
