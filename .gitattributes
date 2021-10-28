@@ -1,6 +1,5 @@
-*.pyc
-.vscode
-*.swp
-*.sqlite3
-__pycache__
-.DS_Store
+*           text=auto
+*.txt       text
+*.vcproj    text eol=crlf
+*.sh        text eol=lf
+*.jpg       -text
