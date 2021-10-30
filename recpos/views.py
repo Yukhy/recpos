@@ -3,10 +3,8 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from config.settings import GMAIL_API_SCOPE, BASE_DIR
+from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR
 from django.shortcuts import render
-import os
-import json
 
 
 def gmail_get_service(user):
@@ -20,13 +18,13 @@ def gmail_get_service(user):
         #json.dump(user.gmail_api_token,tmp_token,ensure_ascii=False)
         tmp_token.write(user.gmail_api_token)
         tmp_token.close()
-        creds = Credentials.from_authorized_user_file(token_file_path, GMAIL_API_SCOPE)
+        creds = Credentials.from_authorized_user_file(token_file_path, SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE)
     #tokenの有効期限が切れていたらリフレッシュ、なかったら作成し、userに格納する
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(BASE_DIR+'/recpos/credentials.json', GMAIL_API_SCOPE)
+            flow = InstalledAppFlow.from_client_secrets_file(BASE_DIR+'/recpos/credentials.json', SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE)
             creds = flow.run_local_server(port=0)
         with open(token_file_path, 'w') as token:
             token.write(creds.to_json())
