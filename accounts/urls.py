@@ -5,7 +5,6 @@ from .views import *
 app_name = 'accounts'
 
 urlpatterns = [
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('django.contrib.auth.urls'), name='login'),
     path('auth/', include('social_django.urls', namespace='social')),
-    path('', home, name='home'),
 ]
