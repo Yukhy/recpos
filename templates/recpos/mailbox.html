@@ -24,7 +24,7 @@
 
             </tr>
             -->
-            <tr>
+            <!-- <tr>
                 <th scope="row" style="width: 24px;">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -62,7 +62,22 @@
                     <a href="#" class="text-dark"><i class="bi bi-trash"></i></button></a>
                 <td>
                 <td class="fw-light small">2021/8/19</td>
-            </tr>
+            </tr> -->
+            {% for message in messages %}
+                <tr>
+                    <th scope="row">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        </div>
+                    </th>
+                    <td class="w-25">{{message.From}}</td>
+                    <td class="w-75">{{message.Subject}}</td>
+                    <td>
+                        <a href="#" class="text-dark"><i class="bi bi-trash"></i></button></a>
+                    <td>
+                    <td class="fw-light small">{{message.Date}}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
