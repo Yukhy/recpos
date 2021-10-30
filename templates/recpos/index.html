@@ -4,6 +4,11 @@
 
 {% block contents %}
 
-
+{% if user.is_authenticated %}
+        <p class="display-4">こんにちは{{ user.username }}</p>
+        <a class="lead" href="{% url 'accounts:logout' %}">ログアウト</a>
+    {% else %}
+        <a class="lead" href="{% url 'accounts:login' %}">ログイン</a>
+    {% endif %}
 
 {% endblock %}

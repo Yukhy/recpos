@@ -6,6 +6,7 @@ from google.oauth2.credentials import Credentials
 from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR
 from django.shortcuts import render
 import re
+from django.contrib.auth.decorators import login_required
 
 
 def gmail_get_service(user):
@@ -75,9 +76,6 @@ def get_message_list(service):
 
         return MessageList
 
-def index(request):
-    return render(request, 'recpos/index.html')
-
 def encode_date(date):
     month = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     pattern = '([A-Z][a-z]{2}), (\d{1,2}) ([A-Z][a-z]{2}) (\d{4}) (\d{2}):(\d{2}):\d{2} \S*'
@@ -85,6 +83,9 @@ def encode_date(date):
     result = "{0}/{1}/{2} {3} {4}:{5}"
     return result.format(content.group(4), month.index(content.group(3)), content.group(2), content.group(1), content.group(5), content.group(6))  
 
+@login_required
+def index(request):
+    return render(request, 'recpos/index.html')
 def mailbox(request):
 
     service = gmail_get_service(request.user)
