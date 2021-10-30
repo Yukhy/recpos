@@ -1,28 +1,25 @@
 {% extends "accounts/base.html" %}
 {% block content %}
-<div class="row">
-    <!-- 左側、ログインエリア -->
-    <div class="card col-md-6">
-        <div class="card-body">
-            <form action="{% url 'accounts:login' %}" method="POST">
-                {{ form.non_field_errors }}
-                {% for field in form %}
+<div class="vh-100 d-flex align-items-center justify-content-center vw-100">
+    
+    <div class="card" style="width:500px; height: 500px;">
+        <div class="card-body d-flex align-items-center justify-content-center p-5">
+            <div class="w-100">
+                <h2>RECPOSサインイン</h2>
+                <hr>
+                <form action="{% url 'accounts:login' %}" method="POST">
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
                     {{ field }}
                     {{ field.errors }}
-                    <hr>
-                {% endfor %}
-                <button type="submit" class="btn btn-success btn-lg btn-block" >ログイン</button>
-                <input type="hidden" name="next" value="{{ next }}" />
-                {% csrf_token %}
-            </form>
+                    <br>
+                    {% endfor %}
+                    <a href="{% url 'accounts:user_create' %}" class="btn btn-secondary btn-block">サインアップ</a>
+                    <button type="submit" class="btn btn-primary btn-block">サインイン</button>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                    {% csrf_token %}
+                </form>
+            </div>
         </div>
-    </div><!-- 左側、ログインエリアおわり -->
-
-    <!-- 右側、会員登録エリア -->
-    <div class="card col-md-6">
-        <div class="card-body">
-            <a href="{% url 'accounts:user_create' %}" class="btn btn-success btn-lg btn-block" >会員登録</a>
-        </div>
-    </div><!-- 右側、会員登録エリアおわり -->
-</div>
-{% endblock %}
+    </div>
+    {% endblock %}
