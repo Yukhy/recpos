@@ -1,13 +1,11 @@
 from django.urls import path
-from . import views
+from django.conf.urls import include
+from .views import *
 
 app_name = 'accounts'
 
 urlpatterns = [
-    path('', views.Top.as_view(), name='top'),
-    path('login/', views.Login.as_view(), name='login'),
-    path('logout/', views.Logout.as_view(), name='logout'),
-    path('user_create/', views.UserCreate.as_view(), name='user_create'),
-    path('user_create/done', views.UserCreateDone.as_view(), name='user_create_done'),
-    path('user_create/complete/<token>/', views.UserCreateComplete.as_view(), name='user_create_complete'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('auth/', include('social_django.urls', namespace='social')),
+    path('', home, name='home'),
 ]
