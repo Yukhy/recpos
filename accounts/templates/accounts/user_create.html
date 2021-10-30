@@ -1,15 +1,25 @@
 {% extends "accounts/base.html" %}
 {% block content %}
-<form action="" method="POST">
-    {{ form.non_field_errors }}
-    {% for field in form %}
-    <div class="form-group">
-        <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
-        {{ field }}
-        {{ field.errors }}
+
+<div class="vh-100 d-flex align-items-center justify-content-center vw-100">
+
+    <div class="card" style="width:500px; height: 500px;">
+        <div class="card-body d-flex align-items-center justify-content-center p-5">
+            <div class="w-100">
+                <h2>RECPOSサインアップ</h2>
+                <hr>
+                <form action="" method="POST">
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
+                    {{ field }}
+                    {{ field.errors }}
+                    <br>
+                    {% endfor %}
+                    {% csrf_token %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-block">サインイン</a>
+                    <button type="submit" class="btn btn-primary">サインアップ</button>
+                </form>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-    {% csrf_token %}
-    <button type="submit" class="btn btn-primary btn-lg">送信</button>
-</form>
-{% endblock %}
+    {% endblock %}
