@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'recpos',
     'accounts',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +58,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # templatesディレクトリのパスをRECPOSプロジェクト直下に変更
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,6 +67,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # social-app-auth
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -122,14 +129,47 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-# ユーザー認証用に追加
-AUTH_USER_MODEL = 'accounts.User'
-
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'recpos:index'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# socal-app-auth: Google認証
+AUTHENTICATION_BACKENDS = (
+ 'social_core.backends.open_id.OpenIdAuth',  # for Google authentication
+ 'social_core.backends.google_openidconnect.GoogleOpenIdConnect',  # for Google authentication
+ 'social_core.backends.google.GoogleOAuth2',  # for Google authentication
 
-# Gmail API用に追加
-GMAIL_API_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
+ 'django.contrib.auth.backends.ModelBackend',
+)
+
+# recposのOAUTHキー
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1052987790612-n086ahfbueij51j0qt3tmbi5ud8t74e5.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ZmxGsmlVb1JXxZj8jLpFjkGk'
+
+SOCIAL_AUTH_URL_NAMESPACE = "accounts:social"
+
+# socal-app-authとaccounts.modelsを接続するための設定
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'accounts.pipeline.save_profile'
+)
+
+# アカウントの関連付けに Google プロファイル ID 識別子を使用する
+SOCIAL_AUTH_GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
+
+# アクセストークンをjson形式でUserテーブルに保存する
+SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
+      'access_type': 'offline'
+}
+
+# SCOPEの設定
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ["https://www.googleapis.com/auth/gmail.modify"]
