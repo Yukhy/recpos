@@ -5,6 +5,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
 def gmail_get_service(user):
@@ -44,6 +45,7 @@ def gmail_get_messages(service):
         msg = messages.get(userId='me', id=topid).execute()
     return msg
 
+@login_required
 def index(request):
     return render(request, 'recpos/index.html')
 
