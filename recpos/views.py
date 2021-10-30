@@ -52,6 +52,3 @@ def mailbox(request):
     service = gmail_get_service(request.user)
     msg = gmail_get_messages(service)
     return render(request, 'recpos/mailbox.html')
-
-def login(request):
-    return render(request, 'recpos/tmpLogin.html')
