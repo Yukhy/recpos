@@ -26,6 +26,7 @@ pycparser
 PyJWT
 PyMySQL
 pyparsing
+python-dateutil
 python-social-auth
 python3-openid 
 pytz

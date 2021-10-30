@@ -5,8 +5,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from config.settings import GMAIL_API_SCOPE, BASE_DIR
 from django.shortcuts import render
-import os
-import json
+import re
 
 
 def gmail_get_service(user):
@@ -46,14 +45,51 @@ def gmail_get_messages(service):
         msg = messages.get(userId='me', id=topid).execute()
     return msg
 
+def get_message_list(service):
+
+        MessageList = []
+
+
+        # メールIDの一覧を取得する(最大100件)
+        messageIDlist = service.users().messages().list(userId="me", maxResults=10).execute()
+        # 該当するメールが存在しない場合は、処理中断
+        if messageIDlist["resultSizeEstimate"] == 0:
+            return MessageList
+        # メッセージIDを元に、メールの詳細情報を取得
+        for message in messageIDlist["messages"]:
+            row = {}
+            row["ID"] = message["id"]
+            MessageDetail = service.users().messages().get(userId="me", id=message["id"]).execute()
+            for header in MessageDetail["payload"]["headers"]:
+                # 日付、送信元、件名を取得する
+                if header["name"] == "Date":
+                    row["Date"] = encode_date(header["value"])
+                elif header["name"] == "From":
+                    row["From"] = header["value"]
+                elif header["name"] == "To":
+                    row["To"] = header["value"]
+                elif header["name"] == "Subject":
+                    row["Subject"] = header["value"]
+            MessageList.append(row)
+
+        return MessageList
+
 def index(request):
     return render(request, 'recpos/index.html')
+
+def encode_date(date):
+    month = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    pattern = '([A-Z][a-z]{2}), (\d{1,2}) ([A-Z][a-z]{2}) (\d{4}) (\d{2}):(\d{2}):\d{2} \S*'
+    content = re.match(pattern, date)
+    result = "{0}/{1}/{2} {3} {4}:{5}"
+    return result.format(content.group(4), month.index(content.group(3)), content.group(2), content.group(1), content.group(5), content.group(6))  
 
 def mailbox(request):
 
     service = gmail_get_service(request.user)
-    msg = gmail_get_messages(service)
-    return render(request, 'recpos/mailbox.html')
+    msg = get_message_list(service)
+    data = {'messages': msg}
+    return render(request, 'recpos/mailbox.html', data)
 
 def login(request):
     return render(request, 'recpos/tmpLogin.html')
