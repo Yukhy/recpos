@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap 5.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'css/sizingExtension.css' %}" />
+    <title>{% block title %}{% endblock %} - recpos</title>
+</head>
+
+<body>
+    <main class="vh-100 d-flex align-items-center justify-content-center" style="background-color:#e2e2e2;">
+        <div class="bg-dark rounded d-flex align-items-center justify-content-center"
+            style="width: 400px; height: 400px;">
+            <div class="text-white text-center">
+                <div class="mb-5">
+                    <i class="bi bi-mailbox" style="font-size:50px"></i>
+                    <br>
+                    <h1>RECPOS</h1>
+                </div>
+                <div class="text-white text-center">
+                    <img style="cursor: pointer; width: 250px;" src="{%static 'img/btn_google_signin_dark_normal_web@2x.png' %}"
+                        alt="Sign in with Google">
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Bootstrap 5.0 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
