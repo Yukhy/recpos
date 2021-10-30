@@ -1,0 +1,11 @@
+.o-btn-google-dark {
+    background-color: #4285F4;
+    color: #ffffff;
+}
+
+.o-bg-login-image {
+    background-image: url("https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc");
+    background-size: cover;
+    background-position: center;
+    
+}
