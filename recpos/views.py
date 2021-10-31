@@ -80,6 +80,7 @@ def get_message_list(service):
         return MessageList
 
 def decode_date(date):
+    #日付を読みやすい形に変換する
     month = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
     pattern = '([A-Z][a-z]{2}), (\d{1,2}) ([A-Z][a-z]{2}) (\d{4}) (\d{2}):(\d{2}):\d{2} \S*'
     content = re.match(pattern, date)
@@ -87,9 +88,22 @@ def decode_date(date):
     return result.format(content.group(4), month.index(content.group(3)), content.group(2), content.group(1), content.group(5), content.group(6))  
 
 def base64_decode(b64_message):
+    #textをデコードする
     message = base64.urlsafe_b64decode(
         b64_message + '=' * (-len(b64_message) % 4)).decode(encoding='utf-8')
     return message
+
+def mark_as_read(service, id):
+    #メールを既読にする
+    query = {"removeLabelIds": ["UNREAD"]}
+    service.users().messages().modify(userId="me", id=id, body=query).execute()
+    return
+
+def mark_as_unread(service, id):
+    #メールを未読にする
+    query = {"addLabelIds": ["UNREAD"]}
+    service.users().messages().modify(userId="me", id=id, body=query).execute()
+    return
 
 @login_required
 def index(request):
