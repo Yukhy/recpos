@@ -19,7 +19,7 @@ def gmail_get_service(user):
         #user.gmail_api_tokenからtoken.jasonを一時的に作成
         tmp_token = open(token_file_path, 'w')
         #json.dump(user.gmail_api_token,tmp_token,ensure_ascii=False)
-        tmp_token.write(user.gmail_api_token)
+        tmp_token.write(user_profile.gmail_api_token)
         tmp_token.close()
         creds = Credentials.from_authorized_user_file(token_file_path, SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE)
     #tokenの有効期限が切れていたらリフレッシュ、なかったら作成し、userに格納する
@@ -28,7 +28,7 @@ def gmail_get_service(user):
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(BASE_DIR+'/recpos/credentials.json', SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE)
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=8080)
         with open(token_file_path, 'w') as token:
             token.write(creds.to_json())
     user_profile.gmail_api_token = creds.to_json()
@@ -36,24 +36,12 @@ def gmail_get_service(user):
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-def gmail_get_messages(service):
-    # メッセージの一覧を取得
-    messages = service.users().messages()
-    msg_list = messages.list(userId='me', maxResults=10).execute()
-
-    # 取得したメッセージの一覧を表示
-    for msg in msg_list['messages']:
-        topid = msg['id']
-        msg = messages.get(userId='me', id=topid).execute()
-    return msg
-
 def get_message_list(service):
 
         MessageList = []
 
-
-        # メールIDの一覧を取得する(最大100件)
-        messageIDlist = service.users().messages().list(userId="me", maxResults=10).execute()
+        # メールIDの一覧を取得する(最大30件)
+        messageIDlist = service.users().messages().list(userId="me", maxResults=30, labelIds="INBOX").execute()
         # 該当するメールが存在しない場合は、処理中断
         if messageIDlist["resultSizeEstimate"] == 0:
             return MessageList
@@ -62,6 +50,12 @@ def get_message_list(service):
             row = {}
             row["ID"] = message["id"]
             MessageDetail = service.users().messages().get(userId="me", id=message["id"]).execute()
+
+            if "UNREAD" in MessageDetail["labelIds"]:
+                row["Unread"] = True
+            else :
+                row["Unread"] = False
+
             for header in MessageDetail["payload"]["headers"]:
                 # 日付、送信元、件名を取得する
                 if header["name"] == "Date":
@@ -86,8 +80,8 @@ def encode_date(date):
 @login_required
 def index(request):
     return render(request, 'recpos/index.html')
-def mailbox(request):
 
+def mailbox(request):
     service = gmail_get_service(request.user)
     msg = get_message_list(service)
     data = {'messages': msg}
