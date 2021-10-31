@@ -71,7 +71,10 @@
                         </div>
                     </th>
                     <td class="w-25">{{message.From}}</td>
-                    <td class="w-75">{{message.Subject}}</td>
+                    <td class="w-75">
+                        {{message.Subject}}
+                        {% if message.Unread == True %}   -----未読-----{% endif %}
+                    </td>
                     <td>
                         <a href="#" class="text-dark"><i class="bi bi-trash"></i></button></a>
                     <td>
