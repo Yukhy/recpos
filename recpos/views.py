@@ -60,7 +60,7 @@ def get_message_list(service):
             for header in MessageDetail["payload"]["headers"]:
                 # 日付、送信元、件名を取得する
                 if header["name"] == "Date":
-                    row["Date"] = decode_date(header["value"])
+                    row["Date"] = header["value"]
                 elif header["name"] == "From":
                     row["From"] = header["value"]
                 elif header["name"] == "To":
@@ -109,6 +109,7 @@ def mark_as_unread(service, id):
 def index(request):
     return render(request, 'recpos/index.html')
 
+@login_required
 def mailbox(request):
     service = gmail_get_service(request.user)
     msg = get_message_list(service)
