@@ -59,7 +59,7 @@ def get_message_list(service):
             for header in MessageDetail["payload"]["headers"]:
                 # 日付、送信元、件名を取得する
                 if header["name"] == "Date":
-                    row["Date"] = encode_date(header["value"])
+                    row["Date"] = header["value"]
                 elif header["name"] == "From":
                     row["From"] = header["value"]
                 elif header["name"] == "To":
