@@ -3,11 +3,12 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR
+from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR, REFRESH_TOKEN
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import base64
 import re
+import ast
 
 
 def gmail_get_service(user):
@@ -17,11 +18,15 @@ def gmail_get_service(user):
     user_profile = user.profile
     #userがtokenをもっていたらcredsに取り出す
     if user_profile.gmail_api_token!="":
+        user_token = user_profile.gmail_api_token
+        #api_tokenにrefresh_tokenが存在しない場合があるため追加
+        if 'refresh_token' not in user_token:
+            api_token = ast.literal_eval(user_token)
+            api_token['refrech_token'] = REFRESH_TOKEN
+            user_token = str(api_token)
         #user.gmail_api_tokenからtoken.jasonを一時的に作成
-        tmp_token = open(token_file_path, 'w')
-        #json.dump(user.gmail_api_token,tmp_token,ensure_ascii=False)
-        tmp_token.write(user_profile.gmail_api_token)
-        tmp_token.close()
+        with open(token_file_path, 'w') as tmp_token:
+            tmp_token.write(user_token)
         creds = Credentials.from_authorized_user_file(token_file_path, SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE)
     #tokenの有効期限が切れていたらリフレッシュ、なかったら作成し、userに格納する
     if not creds or not creds.valid:
@@ -68,13 +73,13 @@ def get_message_list(service):
                 elif header["name"] == "Subject":
                     row["Subject"] = header["value"]
 
-            if 'data' in MessageDetail['payload']['body']:
+            """ if 'data' in MessageDetail['payload']['body']:
                 b64_message = MessageDetail['payload']['body']['data']
             # Such as text/html
             elif MessageDetail['payload']['parts'] is not None:
                 b64_message = MessageDetail['payload']['parts'][0]['body']['data']
             message = base64_decode(b64_message)
-            row["Text"] = message
+            row["Text"] = message """
 
             MessageList.append(row)
         return MessageList
