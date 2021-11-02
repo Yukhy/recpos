@@ -73,13 +73,18 @@ def get_message_list(service):
                 elif header["name"] == "Subject":
                     row["Subject"] = header["value"]
 
-            """ if 'data' in MessageDetail['payload']['body']:
+            if 'data' in MessageDetail['payload']['body']:
                 b64_message = MessageDetail['payload']['body']['data']
+                row["Text"] = base64_decode(b64_message)
+            elif MessageDetail["payload"]["parts"][0]["body"]["size"] == 0:
+                if "snippet" in MessageDetail:
+                    row["Text"] = MessageDetail["snippet"]
+                else:
+                    row["Text"] = "None Text"
             # Such as text/html
             elif MessageDetail['payload']['parts'] is not None:
                 b64_message = MessageDetail['payload']['parts'][0]['body']['data']
-            message = base64_decode(b64_message)
-            row["Text"] = message """
+                row["Text"] = base64_decode(b64_message)
 
             MessageList.append(row)
         return MessageList
