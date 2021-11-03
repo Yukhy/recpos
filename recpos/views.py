@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 import base64
 import re
 import ast
+import json
 
 
 def gmail_get_service(user):
@@ -22,11 +23,14 @@ def gmail_get_service(user):
         #api_tokenにrefresh_tokenが存在しない場合があるため追加
         if 'refresh_token' not in user_token:
             api_token = ast.literal_eval(user_token)
-            api_token['refrech_token'] = REFRESH_TOKEN
-            user_token = str(api_token)
+            api_token['refresh_token'] = REFRESH_TOKEN
+            user_token = api_token
         #user.gmail_api_tokenからtoken.jasonを一時的に作成
-        with open(token_file_path, 'w') as tmp_token:
-            tmp_token.write(user_token)
+            with open(token_file_path, 'w') as tmp_token:
+                tmp_token.write(json.dumps(user_token))
+        else :
+            with open(token_file_path, 'w') as tmp_token:
+                tmp_token.write(user_token)
         creds = Credentials.from_authorized_user_file(token_file_path, SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE)
     #tokenの有効期限が切れていたらリフレッシュ、なかったら作成し、userに格納する
     if not creds or not creds.valid:
@@ -42,12 +46,12 @@ def gmail_get_service(user):
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-def get_message_list(service):
+def get_message_list(user_email, service):
         #受信ボックス内のメールを30件返す
         MessageList = []
 
         # メールIDの一覧を取得する(最大30件)
-        messageIDlist = service.users().messages().list(userId="me", maxResults=30, labelIds="INBOX").execute()
+        messageIDlist = service.users().messages().list(userId=user_email, maxResults=30, labelIds="INBOX").execute()
         # 該当するメールが存在しない場合は、処理中断
         if messageIDlist["resultSizeEstimate"] == 0:
             return MessageList
@@ -55,7 +59,7 @@ def get_message_list(service):
         for message in messageIDlist["messages"]:
             row = {}
             row["ID"] = message["id"]
-            MessageDetail = service.users().messages().get(userId="me", id=message["id"]).execute()
+            MessageDetail = service.users().messages().get(userId=user_email, id=message["id"]).execute()
 
             if "UNREAD" in MessageDetail["labelIds"]:
                 row["Unread"] = True
@@ -103,16 +107,16 @@ def base64_decode(b64_message):
         b64_message + '=' * (-len(b64_message) % 4)).decode(encoding='utf-8')
     return message
 
-def mark_as_read(service, id):
+def mark_as_read(user_email, service, id):
     #メールを既読にする
     query = {"removeLabelIds": ["UNREAD"]}
-    service.users().messages().modify(userId="me", id=id, body=query).execute()
+    service.users().messages().modify(userId=user_email, id=id, body=query).execute()
     return
 
-def mark_as_unread(service, id):
+def mark_as_unread(user_email, service, id):
     #メールを未読にする
     query = {"addLabelIds": ["UNREAD"]}
-    service.users().messages().modify(userId="me", id=id, body=query).execute()
+    service.users().messages().modify(userId=user_email, id=id, body=query).execute()
     return
 
 @login_required
@@ -122,7 +126,7 @@ def index(request):
 @login_required
 def mailbox(request):
     service = gmail_get_service(request.user)
-    msg = get_message_list(service)
+    msg = get_message_list(request.user.email, service)
     data = {'messages': msg}
     return render(request, 'recpos/mailbox.html', data)
 
