@@ -172,7 +172,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
 
 # アクセストークンをjson形式でUserテーブルに保存する
 SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
-      'access_type': 'offline'
+      'access_type': 'offline',
+      'approval_prompt': 'auto'
 }
 
 # SCOPEの設定
