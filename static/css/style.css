@@ -2,16 +2,17 @@ body{
   background-color: #f8f9fc;
 }
 
-main{
-  background-color: white;
+.o-bg-login{
+  background-image: linear-gradient(180deg, #448AFF 10%, #3F51B5 100%);
 }
 
+
 .bg-main {
-  background-color: #F44336;
+  background-color: #3F51B5;
 }
 
 .bg-gradient-main {
-  background-image: linear-gradient(180deg, #ef5350 10%, #e53935 100%);
+  background-image: linear-gradient(180deg, #448AFF 10%, #303F9F 100%);
 }
 
 .topbar {
@@ -32,7 +33,7 @@ main{
 }
 
 .nav-link:hover {
-  color: #f44336!important;
+  color: #3F51B5!important;
   background-color: white;
 }
 
@@ -50,8 +51,25 @@ main{
 }
 
 .o-border-left-main{
-  border-left: 0.25rem solid #f44336!important;
+  border-left: 0.25rem solid #3F51B5!important;
 }
+
+.o-border-left-red{
+  border-left: 0.25rem solid #F44336!important;
+}
+
+.card-header h6{
+  margin: 0;
+  line-height: 30px;
+  color: #3F51B5;
+  font-weight: bold;
+  background-color: #f8f9fc;
+}
+
+.inactive{
+  display: none;
+}
+
 
 /* SIZE EXTENTION */
 /* Extra small devices (portrait phones, less than 576px) */
