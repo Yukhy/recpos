@@ -204,8 +204,7 @@ def index(request):
     return render(request, 'recpos/index.html')
 
 @login_required
-def mailbox(request):
-    num=1
+def mailbox(request, num):
     user_messages = json.loads(request.user.profile.messages)
     messages = []
     for i in range(30*(num-1),30*(num)):
