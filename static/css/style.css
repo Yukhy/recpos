@@ -3,7 +3,7 @@ body{
 }
 
 .o-bg-login{
-  background-image: linear-gradient(180deg, #448AFF 10%, #3F51B5 100%);
+  background-image: linear-gradient(180deg, #2196f3 10%, #1565c0 100%);
 }
 
 
@@ -12,7 +12,7 @@ body{
 }
 
 .bg-gradient-main {
-  background-image: linear-gradient(180deg, #448AFF 10%, #303F9F 100%);
+  background-image: linear-gradient(180deg, #2196f3 10%, #1565c0 100%);
 }
 
 .topbar {

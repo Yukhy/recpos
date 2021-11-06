@@ -1,4 +1,7 @@
 from __future__ import print_function
+
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -10,6 +13,7 @@ import base64
 import re
 import ast
 import json
+from .forms import UserChangeForm, ProfileChangeForm
 
 
 def gmail_get_service(user):
@@ -121,7 +125,16 @@ def mark_as_unread(user_email, service, id):
 
 @login_required
 def index(request):
-    return render(request, 'recpos/index.html')
+    user = request.user
+    params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
+    if request.method == 'POST':
+        form1 = UserChangeForm(request.POST, instance=user)
+        form2 = ProfileChangeForm(request.POST, instance=user.profile)
+        if form1.is_valid() and form2.is_valid():
+            form1.save()
+            form2.save()
+            return redirect('recpos:index')
+    return render(request, 'recpos/index.html', params)
 
 @login_required
 def mailbox(request):
@@ -130,8 +143,7 @@ def mailbox(request):
     data = {'messages': msg}
     return render(request, 'recpos/mailbox.html', data)
 
-def login(request):
-    return render(request, 'recpos/tmpLogin.html')
+
 
 def privacy_policy(request):
     return render(request, 'recpos/privacy-policy.html')
