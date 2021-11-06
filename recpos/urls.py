@@ -6,4 +6,5 @@ app_name = 'recpos'
 urlpatterns = [
     path('', views.index, name="index"),
     path('mailbox', views.mailbox, name="mailbox"),
+    path('privacy-policy', views.privacy_policy, name="privacy-policy"),
 ]
