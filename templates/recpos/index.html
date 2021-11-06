@@ -1,11 +1,90 @@
 {% extends "./base.html" %}
 
 {% block title %}Profile{% endblock %}
-{% block card-header %}Profile{% endblock %}
 
 {% block contents %}
+<div class="px-2 col-md">
+        <!-- エイリアスメールアドレスが登録されていなかった場合に表示するカード -->
+        
+        <div class="mb-3 card shadow rounded o-border-left-warning">
+                <div class="card-body">
+                        <h5 class="card-title fw-bold mb-3">エイリアスメールアドレスの登録</h5>
+                        <p class="card-text">
+                                RECPOSのデフォルトの設定ではGoogleアカウントで認証されたメールアドレスに基づいてメールを受信します。エイリアスの登録によって、使用用途を絞ったメール受信が可能になります。
+                        </p>
+                        <a href="#" class="card-link">エイリアスメールアドレスの作成</a><br class="d-md-none">
+                        <a href="#" class="card-link">RECPOSにエイリアスメールアドレスを登録</a>
+                </div>
+        </div>
+        
 
+        <div class="mb-3 card shadow rounded">
+                <div class="card-header">
+                        <h6>Profile</h6>
+                </div>
+                <div class="card-body">
+                        <form action="#">
+                                <div class="mb-3">
+                                        <div class="input-group">
+                                                <span class="input-group-text">ユーザー名</span>
+                                                <input type="text" aria-label="User name" class="form-control"
+                                                        value="{{ user.username }}" placeholder="ユーザー名">
+                                        </div>
+                                </div>
+                                <div class="mb-3">
+                                        <div class="input-group">
+                                                <span class="input-group-text">名前</span>
+                                                <input type="text" aria-label="First name" class="form-control"
+                                                        value="{{ user.first_name }}" placeholder="名">
+                                                <input type="text" aria-label="Last name" class="form-control"
+                                                        value="{{ user.last_name }}" placeholder="姓">
+                                        </div>
+                                </div>
+                                <div class="mb-3">
+                                        <div class="input-group">
+                                                <span class="input-group-text">Gmail</span>
+                                                <input type="text" aria-label="Email" class="form-control"
+                                                        value="{{ user.email }}" disabled>
+                                        </div>
+                                </div>
+                                <div>
+                                        <button type="submit" class="btn btn-primary">Change Profile</button>
+                                </div>
+                        </form>
+                </div>
+        </div>
+        <div class="mb-3 card shadow rounded">
+                <div class="card-header">
+                        <h6>Alias</h6>
+                </div>
+                <div class="card-body">
+                        <form action="#">
+                                <div class="mb-3">
+                                        <div class="input-group">
+                                                <span class="input-group-text">Alias</span>
+                                                <input type="text" aria-label="Alias" class="form-control"
+                                                        value="{{ profile.alias }}" placeholder="エイリアスメールアドレス">
+                                        </div>
+                                </div>
+                                <div class="mb-3">
+                                        <a class="card-link" data-bs-toggle="collapse" href="#collapseExample"
+                                                aria-expanded="false" aria-controls="collapseExample">
+                                                Help
+                                        </a>
+                                </div>
+                                <div class=" mb-3 collapse" id="collapseExample">
+                                        <div class="card card-body">
+                                                <a href="#" class="card-link small">エイリアスメールアドレスの作成</a>
+                                                <a href="#" class="card-link small ms-0">RECPOSにエイリアスメールアドレスを登録</a>
+                                        </div>
+                                </div>
+                                <div>
+                                        <button type="submit" class="btn btn-primary">Change Alias</button>
+                                </div>
+                        </form>
+                </div>
+        </div>
 
-        <h2>こんにちは、{{ user.username }}</h2>
+</div>
 
 {% endblock %}
