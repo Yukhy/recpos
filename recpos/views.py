@@ -89,3 +89,6 @@ def mailbox(request):
 
 def login(request):
     return render(request, 'recpos/tmpLogin.html')
+
+def privacy_policy(request):
+    return render(request, 'recpos/privacy-policy.html')
