@@ -5,6 +5,6 @@ app_name = 'recpos'
 
 urlpatterns = [
     path('', views.index, name="index"),
-    path('login', views.login, name="login"),
-    path('mailbox', views.mailbox, name="mailbox"),
+    path('login/', views.login, name="login"),
+    path('mailbox/<int:num>/', views.mailbox, name="mailbox"),
 ]
