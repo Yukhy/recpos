@@ -258,16 +258,7 @@ def mark_as_unread(user_email, service, id):
 
 @login_required
 def index(request):
-    user = request.user
-    params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
-    if request.method == 'POST':
-        form1 = UserChangeForm(request.POST, instance=user)
-        form2 = ProfileChangeForm(request.POST, instance=user.profile)
-        if form1.is_valid() and form2.is_valid():
-            form1.save()
-            form2.save()
-            return redirect('recpos:index')
-    
+
     service = gmail_get_service(request.user)
     profile = request.user.profile
     user_email = request.user.email
@@ -279,6 +270,16 @@ def index(request):
         profile.messages = json.dumps({'messages':user_messages})
     profile.last_history_id = history_id
     profile.save()
+
+    user = request.user
+    params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
+    if request.method == 'POST':
+        form1 = UserChangeForm(request.POST, instance=user)
+        form2 = ProfileChangeForm(request.POST, instance=user.profile)
+        if form1.is_valid() and form2.is_valid():
+            form1.save()
+            form2.save()
+            return redirect('recpos:index')
     
     return render(request, 'recpos/index.html', params)
 
