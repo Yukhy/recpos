@@ -79,7 +79,7 @@ def gmail_get_service(user):
 
 #削除予定
 #受信ボックス内のメールを30件返す
-def get_message_list(user_email, service):
+""" def get_message_list(user_email, service):
     #受信ボックス内のメールを30件返す
     MessageList = []
 
@@ -124,12 +124,14 @@ def get_message_list(user_email, service):
             row['Text'] = base64_decode(b64_message)
 
         MessageList.append(row)
-    return MessageList
+    return MessageList """
 
 #条件に合うメッセージのidをリストで返す
 def get_message_id(user_email, service, num, label, query=''):
     messageIDlist = service.users().messages().list(userId=user_email, maxResults=num, labelIds=label, q=query).execute()
     idlist = []
+    if 'messages' not in messageIDlist:
+        return idlist
     for message in messageIDlist['messages']:
         idlist.append(message['id'])
     return idlist
@@ -173,6 +175,57 @@ def get_message_content(user_email, service, id):
 
     return Message(id, labels, subject, text, date, from_address, to_address)
 
+#HistoryのリストとHistoryIdを返す
+def get_history_list(user_email, service, historyid, label=None, history_type=None):
+    historylist = []
+    pagetoken=None
+    while True:
+        history = service.users().history().list(userId=user_email, maxResults=50, pageToken=pagetoken, startHistoryId=historyid, labelId=label).execute()
+        if 'history' not in history:
+            break
+        historylist += history['history']
+        if 'nextPageToken' not in history:
+            break
+        pegetoken = history['nextPageToken']
+    historyid = history['historyId']
+    return historylist, historyid
+
+#Historyからmessagesを更新する
+def change_by_history(user_email, service, messages, history_list):
+    #messagesはlistで渡す
+    for history in history_list:
+        if 'messagesAdded' in history:
+            for message in history['messagesAdded']:
+                id = message['message']['id']
+                msg = get_message_content(user_email, service, id)
+                messages.insert(0, msg.to_dict())
+        if 'messagesDeleted' in history:
+            for message in history['messagesDeleted']:
+                id = message['message']['id']
+                index = get_message_index(messages, id)
+                messages.pop(index)
+        if 'labelsAdded' in history:
+            for message in history['labelsAdded']:
+                id = message['message']['id']
+                msg = get_message_content(user_email, service, id)
+                index = get_message_index(messages, id)
+                messages[index] = msg.to_dict()
+        if 'labelsRemoved' in history:
+            for message in history['labelsRemoved']:
+                id = message['message']['id']
+                msg = get_message_content(user_email, service, id)
+                index = get_message_index(messages, id)
+                messages[index] = msg.to_dict()
+    return messages
+
+#user.profile.messages['message']からidを検索し添字を返す
+def get_message_index(messages, id):
+    #messagesはlistで渡す
+    for index in range(len(messages)):
+        if messages[index]['id'] == id:
+            break
+    return index
+
 #日付を読みやすい形に変換する
 def decode_date(date):
     month = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -201,13 +254,27 @@ def mark_as_unread(user_email, service, id):
 
 @login_required
 def index(request):
+    service = gmail_get_service(request.user)
+    profile = request.user.profile
+    user_email = request.user.email
+    user_messages = json.loads(profile.messages)['messages']
+    last_history_id = profile.last_history_id
+    history_list, history_id = get_history_list(user_email, service, last_history_id)
+    if history_list != []:
+        user_messages = change_by_history(user_email, service, user_messages, history_list)
+        profile.messages = json.dumps({'messages':user_messages})
+    profile.last_history_id = history_id
+    profile.save()
     return render(request, 'recpos/index.html')
 
 @login_required
 def mailbox(request, num):
     user_messages = json.loads(request.user.profile.messages)
     messages = []
+    num_msg = len(user_messages['messages'])
     for i in range(30*(num-1),30*(num)):
+        if i >= num_msg:
+            break
         messages.append(user_messages['messages'][i])
     data = {'messages': messages}
     return render(request, 'recpos/mailbox.html', data)
@@ -226,5 +293,6 @@ def login(request):
             messages.append(message.to_dict())
         user_messages = {'messages':messages}
         user.profile.messages = json.dumps(user_messages)
+        user.profile.last_history_id = service.users().getProfile(userId=user.email).execute()['historyId']
         user.profile.save()
     return render(request, 'recpos/index.html')
