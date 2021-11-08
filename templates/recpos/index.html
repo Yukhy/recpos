@@ -3,9 +3,9 @@
 {% block title %}Profile{% endblock %}
 
 {% block contents %}
-<<<<<<< HEAD
-<form action="{% url 'recpos:index' %}" method="POST" class="p-0">
-        <div class="px-2 col-md">
+
+<form action="{% url 'recpos:index' %}" method="POST" class="p-0 col-md">
+        <div class="px-2">
                 <!-- エイリアスメールアドレスが登録されていなかった場合に表示するカード -->
                 {% if not user.profile.alias %}
                 <div class="mb-3 card shadow rounded o-border-left-warning">
@@ -17,10 +17,8 @@
                                 <a href="#" class="card-link">エイリアスメールアドレスの作成</a><br class="d-md-none">
                                 <a href="#" class="card-link">RECPOSにエイリアスメールアドレスを登録</a>
                         </div>
-
                 </div>
-        </div>
-
+                {% endif %}
 
         <div class="mb-3 card shadow rounded">
                 <div class="card-header">
