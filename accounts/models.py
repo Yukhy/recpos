@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    alias = models.EmailField(max_length=50, blank=True)
+    alias = models.EmailField(max_length=50, blank=True, default='')
     gmail_api_token = models.CharField(blank=True, null=True, max_length=1024, default='')
     messages = models.TextField(blank=True, null=True, default='{"messages": []}')
     last_history_id = models.CharField(blank=True, null=True, max_length=1024, default='')
