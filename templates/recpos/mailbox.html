@@ -13,7 +13,7 @@
             <table class="table table-hover">
                 <tbody>
                     {% for message in messages %}
-                    {% if message.Unread == True %}
+                    {% if 'UNREAD' in message.labels %}
                     <tr class="o-border-left-danger">
                         {% else %}
                     <tr>
@@ -23,14 +23,14 @@
                                 <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                             </div>
                         </th>
-                        <td class="w-25">{{message.From}}</td>
+                        <td class="w-25">{{message.from_address}}</td>
                         <td class="w-75">
-                            {{message.Subject}}
+                            {{message.subject}}
                         </td>
                         <td>
                             <a href="#" class="text-dark"><i class="bi bi-trash"></i></button></a>
                         <td>
-                        <td class="fw-light small">{{message.Date}}</td>
+                        <td class="fw-light small">{{message.date}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
