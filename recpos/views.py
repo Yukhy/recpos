@@ -258,10 +258,10 @@ def mark_as_unread(user_email, service, id):
 
 @login_required
 def index(request):
-
-    service = gmail_get_service(request.user)
-    profile = request.user.profile
-    user_email = request.user.email
+    user = request.user
+    service = gmail_get_service(user)
+    profile = user.profile
+    user_email = user.email
     user_messages = json.loads(profile.messages)['messages']
     last_history_id = profile.last_history_id
     history_list, history_id = get_history_list(user_email, service, last_history_id)
@@ -271,7 +271,6 @@ def index(request):
     profile.last_history_id = history_id
     profile.save()
 
-    user = request.user
     params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
     if request.method == 'POST':
         form1 = UserChangeForm(request.POST, instance=user)
