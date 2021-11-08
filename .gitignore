@@ -4,5 +4,5 @@
 *.sqlite3
 __pycache__
 .DS_Store
-*initial.py
 *@*.json
+*initial.py

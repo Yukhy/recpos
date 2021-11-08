@@ -2,16 +2,17 @@ body{
   background-color: #f8f9fc;
 }
 
-main{
-  background-color: white;
+.o-bg-login{
+  background-image: linear-gradient(180deg, #2196f3 10%, #1565c0 100%);
 }
 
+
 .bg-main {
-  background-color: #F44336;
+  background-color: #3F51B5;
 }
 
 .bg-gradient-main {
-  background-image: linear-gradient(180deg, #ef5350 10%, #e53935 100%);
+  background-image: linear-gradient(180deg, #2196f3 10%, #1565c0 100%);
 }
 
 .topbar {
@@ -32,7 +33,7 @@ main{
 }
 
 .nav-link:hover {
-  color: #f44336!important;
+  color: #3F51B5!important;
   background-color: white;
 }
 
@@ -50,8 +51,29 @@ main{
 }
 
 .o-border-left-main{
-  border-left: 0.25rem solid #f44336!important;
+  border-left: 0.25rem solid #3F51B5!important;
 }
+
+.o-border-left-danger{
+  border-left: 0.25rem solid #dc3545!important;
+}
+
+.o-border-left-warning{
+  border-left: 0.25rem solid #ffc107!important;
+}
+
+.card-header h6{
+  margin: 0;
+  line-height: 30px;
+  color: #3F51B5;
+  font-weight: bold;
+  background-color: #f8f9fc;
+}
+
+.inactive{
+  display: none;
+}
+
 
 /* SIZE EXTENTION */
 /* Extra small devices (portrait phones, less than 576px) */
