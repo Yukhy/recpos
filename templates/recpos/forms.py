@@ -31,5 +31,3 @@ class ProfileChangeForm(forms.ModelForm):
 
         self.fields['alias'].widget.attrs['class'] = "form-control"
         self.fields['alias'].widget.attrs['type'] = "text"
-
-
