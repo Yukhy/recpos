@@ -313,4 +313,4 @@ def login(request):
         user.profile.messages = json.dumps(user_messages)
         user.profile.last_history_id = service.users().getProfile(userId=user.email).execute()['historyId']
         user.profile.save()
-    return render(request, 'recpos/index.html')
+    return redirect('recpos:index')
