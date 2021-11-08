@@ -3,7 +3,7 @@ from accounts.models import Profile
 
 
 class Company(models.Model):
-    user_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name = "company")
+    user_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="company")
     company_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256)
     address = models.EmailField(blank=True)
@@ -14,7 +14,7 @@ class Company(models.Model):
 
 
 class Event(models.Model):
-    owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name = "event")
+    owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="event")
     event_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256)
     star_date_time = models.DateField(blank=True, null=True, max_length=128)
@@ -27,7 +27,7 @@ class Event(models.Model):
 
 
 class Task(models.Model):
-    owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name = "task")
+    owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="task")
     task_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256)
     deadline = models.DateField(blank=True, null=True, max_length=128)
