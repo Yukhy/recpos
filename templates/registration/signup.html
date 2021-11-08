@@ -23,7 +23,7 @@
           <div class="col-lg-6 d-none d-lg-block o-bg-login-image p-0"></div>
           <div class="col-lg-6 d-flex align-items-center justify-content-center p-5 text-center">
             <div>
-              <h1>RECPOS</h1>
+              <h1>Welcome to RECPOS</h1>
               <hr>
               <p class="lh-lg py-4">就活者のために作られた<br>メールボックスアプリ。<br>
                 企業やイベントの情報をスマートに管理しよう。
@@ -31,9 +31,9 @@
               <a href="{% url 'accounts:social:begin' 'google-oauth2' %}"
                 class="btn btn-lg o-btn-google-dark fs-6 fw-bold text-white">
                 <img src="{% static 'registration/img/google-icon.svg' %}" alt="Google-logo" width="25"
-                  class="bg-white p-1 rounded-circle">&emsp;Sign in with Google</a>
+                  class="bg-white p-1 rounded-circle">&emsp;Sign up with Google</a>
                   <hr>
-              <a href="{% url 'recpos:signup' %}" class="text-secondary text-decoration-none">サインアップ</a>
+              <a href="{% url 'recpos:login' %}" class="text-secondary text-decoration-none">サインイン</a>
             </div>
           </div>
         </div>
