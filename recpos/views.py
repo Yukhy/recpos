@@ -110,7 +110,7 @@ def get_message_content(user_email, service, id):
     for header in MessageDetail['payload']['headers']:
         # 日付、送信元、件名を取得する
         if header['name'] == 'Date':
-            date = header['value']
+            date = decode_date(header['value'])
         elif header['name'] == 'From':
             from_address = header['value']
         elif header['name'] == 'To':
@@ -198,11 +198,15 @@ def get_message_index(messages, id):
 
 #日付を読みやすい形に変換する
 def decode_date(date):
+    result = {}
     month = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    pattern = '([A-Z][a-z]{2}), (\d{1,2}) ([A-Z][a-z]{2}) (\d{4}) (\d{2}):(\d{2}):\d{2} \S*'
-    content = re.match(pattern, date)
-    result = '{0}/{1}/{2} {3} {4}:{5}'
-    return result.format(content.group(4), month.index(content.group(3)), content.group(2), content.group(1), content.group(5), content.group(6))  
+    result['year'] = int(re.search('\d{4}', date).group())
+    result['month'] = month.index(re.search('Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec', date).group())
+    result['date'] = int(re.search('\d{1,2}', date).group())
+    time = re.search('(\d{1,2}):(\d{1,2}):\d{1,2}', date)
+    result['hour'] = time.group(1)
+    result['minute'] = time.group(2)
+    return result
 
 #textをデコードする
 def base64_decode(b64_message):
