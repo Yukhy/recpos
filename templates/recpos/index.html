@@ -3,7 +3,7 @@
 {% block title %}Profile{% endblock %}
 
 {% block contents %}
-<form action="{% url 'recpos:index' %}" method="POST">
+<form action="{% url 'recpos:index' %}" method="POST" class="p-0">
         <div class="px-2 col-md">
                 <!-- エイリアスメールアドレスが登録されていなかった場合に表示するカード -->
                 {% if not user.profile.alias %}
