@@ -259,18 +259,6 @@ def mark_as_unread(user_email, service, id):
 @login_required
 def index(request):
     user = request.user
-    service = gmail_get_service(user)
-    profile = user.profile
-    user_email = user.email
-    user_messages = json.loads(profile.messages)['messages']
-    last_history_id = profile.last_history_id
-    history_list, history_id = get_history_list(user_email, service, last_history_id)
-    if history_list != []:
-        user_messages = change_by_history(user_email, service, user_messages, history_list)
-        profile.messages = json.dumps({'messages':user_messages})
-    profile.last_history_id = history_id
-    profile.save()
-
     params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
     if request.method == 'POST':
         form1 = UserChangeForm(request.POST, instance=user)
@@ -284,13 +272,25 @@ def index(request):
 
 @login_required
 def mailbox(request, num):
-    user_messages = json.loads(request.user.profile.messages)
+    user = request.user
+    service = gmail_get_service(user)
+    profile = user.profile
+    user_email = user.email
+    user_messages = json.loads(profile.messages)['messages']
+    last_history_id = profile.last_history_id
+    history_list, history_id = get_history_list(user_email, service, last_history_id)
+    if history_list != []:
+        user_messages = change_by_history(user_email, service, user_messages, history_list)
+        profile.messages = json.dumps({'messages':user_messages})
+    profile.last_history_id = history_id
+    profile.save()
+
     messages = []
-    num_msg = len(user_messages['messages'])
+    num_msg = len(user_messages)
     for i in range(30*(num-1),30*(num)):
         if i >= num_msg:
             break
-        messages.append(user_messages['messages'][i])
+        messages.append(user_messages[i])
     data = {'messages': messages}
     return render(request, 'recpos/mailbox.html', data)
 
