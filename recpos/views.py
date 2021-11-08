@@ -1,7 +1,4 @@
 from __future__ import print_function
-
-from django.contrib.auth.models import User
-from django.shortcuts import redirect
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -13,6 +10,8 @@ import base64
 import re
 import ast
 import json
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from .forms import UserChangeForm, ProfileChangeForm
 
 

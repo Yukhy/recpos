@@ -9,9 +9,6 @@ class Profile(models.Model):
     alias = models.EmailField(max_length=50, blank=True)
     gmail_api_token = models.CharField(blank=True, null=True, max_length=1024, default="")
 
-    def __str__(self):
-        return self.user.username
-
 # userが新規作成sされたときにProfileを作成する
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

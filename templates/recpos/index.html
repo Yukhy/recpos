@@ -3,6 +3,7 @@
 {% block title %}Profile{% endblock %}
 
 {% block contents %}
+<<<<<<< HEAD
 <form action="{% url 'recpos:index' %}" method="POST" class="p-0">
         <div class="px-2 col-md">
                 <!-- エイリアスメールアドレスが登録されていなかった場合に表示するカード -->
@@ -16,63 +17,78 @@
                                 <a href="#" class="card-link">エイリアスメールアドレスの作成</a><br class="d-md-none">
                                 <a href="#" class="card-link">RECPOSにエイリアスメールアドレスを登録</a>
                         </div>
-                </div>
-                {% endif %}
 
-                <div class="mb-3 card shadow rounded">
-                        <div class="card-header">
-                                <h6>Profile</h6>
-                        </div>
-                        <div class="card-body">
-                                {% csrf_token %}
-                                <div class="input-group mb-3">
-                                        <span class="input-group-text">ユーザー名</span>
-                                        {{ userform.username }}
-                                </div>
-                                <div class="input-group mb-3">
-                                        <span class="input-group-text">名前</span>
-                                        {{ userform.first_name }}
-                                        {{ userform.last_name }}
-                                </div>
-                                <div class="input-group mb-3">
-                                        <span class="input-group-text">Gmail</span>
-                                        {{ userform.email }}
-                                </div>
-                                
-                                <div>
-                                        <button class="btn btn-primary" type="submit" name="submit">Change my Profile</button>
-                                </div>
-                        </div>
                 </div>
-                <div class="mb-3 card shadow rounded">
-                        <div class="card-header">
-                                <h6>Alias</h6>
-                        </div>
-                        <div class="card-body">
-                                <div class="input-group mb-3">
-                                        <span class="input-group-text">エイリアス</span>
-                                        {{ profileform.alias }}
-                                </div>
+        </div>
 
+
+        <div class="mb-3 card shadow rounded">
+                <div class="card-header">
+                        <h6>Profile</h6>
+                </div>
+                <div class="card-body">
+                        <form action="#">
                                 <div class="mb-3">
-                                        <a class="card-link" data-bs-toggle="collapse" href="#collapsehint"
+                                        <div class="input-group">
+                                                <span class="input-group-text">ユーザー名</span>
+                                                <input type="text" aria-label="User name" class="form-control"
+                                                        value="{{ user.username }}" placeholder="ユーザー名">
+                                        </div>
+                                </div>
+                                <div class="mb-3">
+                                        <div class="input-group">
+                                                <span class="input-group-text">名前</span>
+                                                <input type="text" aria-label="First name" class="form-control"
+                                                        value="{{ user.first_name }}" placeholder="名">
+                                                <input type="text" aria-label="Last name" class="form-control"
+                                                        value="{{ user.last_name }}" placeholder="姓">
+                                        </div>
+                                </div>
+                                <div class="mb-3">
+                                        <div class="input-group">
+                                                <span class="input-group-text">Gmail</span>
+                                                <input type="text" aria-label="Email" class="form-control"
+                                                        value="{{ user.email }}" disabled>
+                                        </div>
+                                </div>
+                                <div>
+                                        <button type="submit" class="btn btn-primary">Change Profile</button>
+                                </div>
+                        </form>
+                </div>
+        </div>
+        <div class="mb-3 card shadow rounded">
+                <div class="card-header">
+                        <h6>Alias</h6>
+                </div>
+                <div class="card-body">
+                        <form action="#">
+                                <div class="mb-3">
+                                        <div class="input-group">
+                                                <span class="input-group-text">Alias</span>
+                                                <input type="text" aria-label="Alias" class="form-control"
+                                                        value="{{ profile.alias }}" placeholder="エイリアスメールアドレス">
+                                        </div>
+                                </div>
+                                <div class="mb-3">
+                                        <a class="card-link" data-bs-toggle="collapse" href="#collapseExample"
                                                 aria-expanded="false" aria-controls="collapseExample">
-                                                Hint
+                                                Help
                                         </a>
                                 </div>
-                                <div class="mb-3 collapse" id="collapsehint">
+                                <div class=" mb-3 collapse" id="collapseExample">
                                         <div class="card card-body">
                                                 <a href="#" class="card-link small">エイリアスメールアドレスの作成</a>
                                                 <a href="#" class="card-link small ms-0">RECPOSにエイリアスメールアドレスを登録</a>
                                         </div>
                                 </div>
                                 <div>
-                                        <button type="submit" class="btn btn-primary">Change
-                                                Alias</button>
+                                        <button type="submit" class="btn btn-primary">Change Alias</button>
                                 </div>
-                        </div>
+                        </form>
                 </div>
-
         </div>
-</form>
+
+</div>
+
 {% endblock %}
