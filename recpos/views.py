@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR, REFRESH_TOKEN
+from config.settings import BASE_DIR, REFRESH_TOKEN
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import base64
@@ -17,6 +17,7 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 
 MESSAGE_NUM = 20
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
 
 
 class Message:
@@ -62,7 +63,7 @@ def gmail_get_service(user):
             api_token = ast.literal_eval(user_token)
             api_token['refresh_token'] = REFRESH_TOKEN
             user_token = api_token
-        #user.gmail_api_tokenからtoken.jasonを一時的に作成
+        #user.gmail_api_tokenからtoken.jasonを一時的に作成
             with open(token_file_path, 'w') as tmp_token:
                 tmp_token.write(json.dumps(user_token))
         else :
