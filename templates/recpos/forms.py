@@ -19,6 +19,7 @@ class UserChangeForm(forms.ModelForm):
             field.widget.attrs['type'] = "text"
         self.fields['email'].widget.attrs['readonly'] = True
 
+
 class ProfileChangeForm(forms.ModelForm):
 
     class Meta:
