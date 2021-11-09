@@ -16,7 +16,7 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 
 MESSAGE_NUM = 20
-DEFAULT_SAVE_MESSAGE_NUM = 100
+DEFAULT_SAVE_MESSAGE_NUM = 10
 
 
 class Message:
@@ -215,24 +215,28 @@ def get_alias_message(user_alias, messages, num, pagenum, label):
     #messageはlistで渡す
     #numは1ページに表示する件数
     alias_messages = []
-    for message in messages:
+    index_list = []
+    for index, message in enumerate(messages):
         if len(alias_messages) > num * pagenum:
             break
         if message['to_address'] == user_alias and label in message['labels']:
             alias_messages.append(message)
-    return alias_messages
+            index_list.append(index)
+    return alias_messages, index_list
 
 #messageをラベルでフィルタリングする
 def filter_label_message(messages, labels, num, pagenum):
     #messageはlistで渡す
     #numは1ページに表示する件数
-    alias_messages = []
-    for message in messages:
-        if len(alias_messages) > num * pagenum:
+    filter_messages = []
+    index_list = []
+    for index, message in enumerate(messages):
+        if len(filter_messages) > num * pagenum:
             break
         if labels in message['labels']:
-            alias_messages.append(message)
-    return alias_messages
+            filter_messages.append(message)
+            index_list.append(index)
+    return filter_messages, index_list
 
 #user.profile.messages['message']からidを検索し添字を返す
 def get_message_index(messages, id):
@@ -256,7 +260,7 @@ def decode_date(date):
 
 #送り主を読みやすい形に変換する
 def decode_address(address):
-    result = re.search('"?(.*?)"?\s<(.*?)>',address)
+    result = re.search('"?(.*?)"?\s?<(.*?)>',address)
     from_address = {
         'address': result.group(1),
         'name': result.group(2),
@@ -316,13 +320,13 @@ def mailbox(request, label='INBOX', page=1):
     profile.save()
     
     #messageからMESSAGE_NUM件を表示する
-    inbox_message = filter_label_message(user_messages, label, MESSAGE_NUM, page)
+    inbox_message, index_list = filter_label_message(user_messages, label, MESSAGE_NUM, page)
     messages = []
     num_msg = len(inbox_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
-        inbox_message[i]['index'] = i
+        inbox_message[i]['index'] = index_list[i]
         messages.append(inbox_message[i])
 
     labels = json.loads(profile.labels)
@@ -361,13 +365,13 @@ def alias(request, label='INBOX', page=1):
         return redirect('recpos:mailbox')
 
     #alias宛のmessageをMESSAGE_NUM件表示する
-    alias_message = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
+    alias_message, index_list = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
     messages = []
     num_msg = len(alias_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
-        alias_message[i]['index'] = i
+        alias_message[i]['index'] = index_list[i]
         messages.append(alias_message[i])
 
     labels = json.loads(profile.labels)
@@ -383,6 +387,14 @@ def alias(request, label='INBOX', page=1):
         'page': {'now': str(page), 'prev': page-1, 'next': page+1},
         }
     return render(request, 'recpos/mailbox.html', data)
+
+@login_required
+def mail_detail(request, index):
+    user_messages = json.loads(request.user.profile.messages)['messages']
+    data = {
+        'message': user_messages[index],
+    }
+    return render(request, 'recpos/mail-detail.html', data)
 
 def privacy_policy(request):
     return render(request, 'recpos/privacy-policy.html')
@@ -405,6 +417,3 @@ def login(request):
     user.profile.labels = json.dumps(get_labels(user.email, service))
     user.profile.save()
     return redirect('recpos:index')
-
-def mail_detail(request):
-    return render(request, 'recpos/mail-detail.html')
