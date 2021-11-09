@@ -177,6 +177,6 @@ SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
 }
 
 # SCOPEの設定
-#SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
 
 REFRESH_TOKEN = "1//0e5sNzCwZpSrhCgYIARAAGA4SNwF-L9IraT-489eVlsCIUznGR_yH8rZaTxvh-cBkLsstNGp0vRA_3QmKiGGDv9Dxw-dCXCQpyOA"
