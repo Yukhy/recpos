@@ -408,3 +408,6 @@ def login(request):
 
 def mail_detail(request):
     return render(request, 'recpos/mail-detail.html')
+
+def opensource(request):
+    return render(request, 'recpos/opensource.html')
