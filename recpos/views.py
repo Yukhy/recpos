@@ -243,10 +243,8 @@ def index(request):
     user = request.user
     params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
     if request.method == 'POST':
-        form1 = UserChangeForm(request.POST, instance=user)
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
-        if form1.is_valid() and form2.is_valid():
-            form1.save()
+        if form2.is_valid():
             form2.save()
             return redirect('recpos:index')
     
