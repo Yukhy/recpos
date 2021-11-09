@@ -227,7 +227,6 @@ def filter_label_message(messages, labels, num, pagenum):
     #messageはlistで渡す
     #numは1ページに表示する件数
     alias_messages = []
-    #index_
     for message in messages:
         if len(alias_messages) > num * pagenum:
             break
@@ -257,15 +256,11 @@ def decode_date(date):
 
 #送り主を読みやすい形に変換する
 def decode_address(address):
-    from_address = {}
-    name = re.search('"?(.*?)"?\s<.*?>',address)
-    email = re.search('"<(.*?)>',address)
-    from_address = {}
-    if name:
-        from_address['name'] = name.goup()
-    if email :
-        from_address['address'] = email.group()
-
+    result = re.search('"?(.*?)"?\s<(.*?)>',address)
+    from_address = {
+        'address': result.group(1),
+        'name': result.group(2),
+    }
     return from_address
 
 #textをデコードする
@@ -389,14 +384,6 @@ def alias(request, label='INBOX', page=1):
         }
     return render(request, 'recpos/mailbox.html', data)
 
-@login_required
-def mail_detail(request, index):
-    user_messages = json.loads(request.user.profile.messages)['messages']
-    data = {
-        'message': user_messages[index],
-    }
-    return render(request, 'recpos/mail-detail.html', data)
-
 def privacy_policy(request):
     return render(request, 'recpos/privacy-policy.html')
     
@@ -418,3 +405,6 @@ def login(request):
     user.profile.labels = json.dumps(get_labels(user.email, service))
     user.profile.save()
     return redirect('recpos:index')
+
+def mail_detail(request):
+    return render(request, 'recpos/mail-detail.html')
