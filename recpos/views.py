@@ -16,6 +16,7 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 
 MESSAGE_NUM = 20
+DEFAULT_SAVE_MESSAGE_NUM = 100
 
 
 class Message:
@@ -48,6 +49,24 @@ class Message:
         message['from_address'] = self.from_address
         message['to_address'] = self.to_address
         return message
+
+class Label:
+    id = None
+    name = None
+    type = None
+    
+    def __init__(self, id:str, name:str, type:str):
+        self.id = id
+        self.name = name
+        self.type = type
+        
+    def to_dict(self):
+        label = {}
+        label['id'] = self.id
+        label['name'] = self.name
+        label['type'] = self.type
+        return label
+
 
 #userのtokenを確認し、Gmail APIのserviceを返す
 def gmail_get_service(user):
@@ -83,6 +102,18 @@ def gmail_get_service(user):
     service = build('gmail', 'v1', credentials=creds)
     return service
 
+#labelのリストを取得する
+def get_labels(user_email, service):
+    labels = service.users().labels().list(userId=user_email).execute().get('labels', [])
+    user_labels = []
+    for label in labels:
+        if 'labelListVisibility'in label and label['labelListVisibility']=='labelHide':
+            continue
+        id = label['id']
+        name = label['name']
+        type = label['type']
+        user_labels.append(Label(id, name, type).to_dict())
+    return user_labels
 
 #条件に合うメッセージのidをリストで返す
 def get_message_id(user_email, service, num, label=None, query=None):
@@ -180,14 +211,14 @@ def change_by_history(user_email, service, messages, history_list):
     return messages
 
 #alias宛のメールを取得する
-def get_alias_message(user_alias, messages, num, pagenum):
+def get_alias_message(user_alias, messages, num, pagenum, label):
     #messageはlistで渡す
     #numは1ページに表示する件数
     alias_messages = []
     for message in messages:
         if len(alias_messages) > num * pagenum:
             break
-        if message['to_address'] == user_alias:
+        if message['to_address'] == user_alias and label in message['labels']:
             alias_messages.append(message)
     return alias_messages
 
@@ -253,7 +284,11 @@ def mark_as_unread(user_email, service, id):
 @login_required
 def index(request):
     user = request.user
-    params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
+    params = {
+        'userform': UserChangeForm(instance=user),
+        'profileform': ProfileChangeForm(instance=user.profile),
+        'labels': json.loads(user.profile.labels),
+        }
     if request.method == 'POST':
         form1 = UserChangeForm(request.POST, instance=user)
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
@@ -265,7 +300,7 @@ def index(request):
     return render(request, 'recpos/index.html', params)
 
 @login_required
-def mailbox(request, page=1):
+def mailbox(request, label='INBOX', page=1):
     #messageの更新
     user = request.user
     service = gmail_get_service(user)
@@ -281,7 +316,7 @@ def mailbox(request, page=1):
     profile.save()
 
     #messageからMESSAGE_NUM件を表示する
-    inbox_message = filter_label_message(user_messages, 'INBOX', MESSAGE_NUM, page)
+    inbox_message = filter_label_message(user_messages, label, MESSAGE_NUM, page)
     messages = []
     num_msg = len(inbox_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
@@ -289,11 +324,22 @@ def mailbox(request, page=1):
             break
         inbox_message[i]['index'] = i
         messages.append(inbox_message[i])
-    data = {'messages': messages}
+
+    labels = json.loads(profile.labels)
+    label_name = label
+    for l in labels:
+        if l['id'] == label:
+            label_name = l['name']
+
+    data = {
+        'messages': messages,
+        'labels': labels,
+        'label': label_name,
+        }
     return render(request, 'recpos/mailbox.html', data)
 
 @login_required
-def alias(request, page):
+def alias(request, label='INBOX', page=1):
     user = request.user
     service = gmail_get_service(user)
     profile = user.profile
@@ -314,7 +360,7 @@ def alias(request, page):
         return redirect('recpos:mailbox')
 
     #alias宛のmessageをMESSAGE_NUM件表示する
-    alias_message = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page)
+    alias_message = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
     messages = []
     num_msg = len(alias_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
@@ -322,7 +368,18 @@ def alias(request, page):
             break
         alias_message[i]['index'] = i
         messages.append(alias_message[i])
-    data = {'messages': messages}
+
+    labels = json.loads(profile.labels)
+    label_name = label
+    for l in labels:
+        if l['id'] == label:
+            label_name = l['name']
+
+    data = {
+        'messages': messages,
+        'labels': labels,
+        'label': label_name,
+        }
     return render(request, 'recpos/mailbox.html', data)
 
 def privacy_policy(request):
@@ -331,9 +388,9 @@ def privacy_policy(request):
 def login(request):
     user = request.user
     user_messages = json.loads(user.profile.messages)
+    service = gmail_get_service(user)
     if user_messages['messages'] == []:
-        service = gmail_get_service(user)
-        idlist = get_message_id(user.email, service, 100)
+        idlist = get_message_id(user.email, service, DEFAULT_SAVE_MESSAGE_NUM)
         messages = []
         for id in idlist:
             if (sys.getsizeof(messages) >= 5242880):
@@ -343,5 +400,6 @@ def login(request):
         user_messages = {'messages':messages}
         user.profile.messages = json.dumps(user_messages)
         user.profile.last_history_id = service.users().getProfile(userId=user.email).execute()['historyId']
-        user.profile.save()
+    user.profile.labels = json.dumps(get_labels(user.email, service))
+    user.profile.save()
     return redirect('recpos:index')
