@@ -1,41 +1,75 @@
 {% extends "./base.html" %}
 
-{% block title %}MailBox{% endblock %}
+{% block title %}Inbox{% endblock %}
 
 {% block contents %}
 
 <div class="px-2 col-md mb-3">
     <div class="card shadow rounded">
-        <div class="card-header">
+        <div class="card-header d-flex">
             <h6>Inbox</h6>
+            <div class="ms-auto">
+                <a href="#" class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
+                <a href="#" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
+                <a href="#" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-hover">
+        <div class="card-body p-0">
+            <table class="table o-mailbox">
                 <tbody>
                     {% for message in messages %}
-                    {% if 'UNREAD' in message.labels %}
-                    <tr class="o-border-left-danger">
+                        <!-- 未読の場合 -->
+                        {% if 'UNREAD' in message.labels %}
+                            <tr class="o-border-left-primary">
+                                <td style="width:30px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    </div>
+                                </td>
+                                <td class="fw-bold" style="width: 30%;">
+                                        {{message.from_address}}
+
+                                </td>
+                                <td class="fw-bold" style="width: 70%;">
+
+                                        {{message.subject}}
+
+                                </td>
                         {% else %}
-                    <tr>
+                            <tr class="o-mailbox-read">
+                                <td style="width:30px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    </div>
+                                </td>
+                                <td style="width: 30%;">
+
+                                        {{message.from_address}}
+
+                                </td>
+                                <td style="width: 70%;">
+
+                                        {{message.subject}}
+                                </td>
                         {% endif %}
-                        <th scope="row">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                            </div>
-                        </th>
-                        <td class="w-25">{{message.from_address}}</td>
-                        <td class="w-75">
-                            {{message.subject}}
-                        </td>
-                        <td>
-                            <a href="#" class="text-dark"><i class="bi bi-trash"></i></button></a>
-                        <td>
-                        <td class="fw-light small">{% if message.date.year != 2021 %}{{message.date.year}}/{% endif %}{{message.date.month}}/{{message.date.date}}  {{message.date.hour}}:{{message.date.minute}}</td>
-                    </tr>
+                            <td style="width:35px;">
+                                <a href="#" class="text-dark"><i class="bi bi-trash"></i></button></a>
+                            <td>
+                            <td class="small" style="width:90px;">
+                                {% if message.date.year != 2021 %}{{message.date.year}}/{% endif %}{{message.date.month}}/{{message.date.date}}
+                                {{message.date.hour}}:{{message.date.minute}}</td>
+                            </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <div class="card-footer d-flex">
+            <div class="ms-auto">
+                <a href="#" class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
+                <a href="#" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
+                <a href="#" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+            </div>
+          </div>
     </div>
 </div>
 
