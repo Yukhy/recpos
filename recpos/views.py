@@ -3,7 +3,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR, REFRESH_TOKEN
+from config.settings import BASE_DIR, REFRESH_TOKEN
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import base64
@@ -16,6 +16,7 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 
 MESSAGE_NUM = 20
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
 
 
 class Message:
@@ -61,7 +62,7 @@ def gmail_get_service(user):
             api_token = ast.literal_eval(user_token)
             api_token['refresh_token'] = REFRESH_TOKEN
             user_token = api_token
-        #user.gmail_api_tokenからtoken.jasonを一時的に作成
+        #user.gmail_api_tokenからtoken.jasonを一時的に作成
             with open(token_file_path, 'w') as tmp_token:
                 tmp_token.write(json.dumps(user_token))
         else :
@@ -187,6 +188,18 @@ def get_alias_message(user_alias, messages, num, pagenum):
             alias_messages.append(message)
     return alias_messages
 
+#messageをラベルでフィルタリングする
+def filter_label_message(messages, labels, num, pagenum):
+    #messageはlistで渡す
+    #numは1ページに表示する件数
+    alias_messages = []
+    for message in messages:
+        if len(alias_messages) > num * pagenum:
+            break
+        if labels in message['labels']:
+            alias_messages.append(message)
+    return alias_messages
+
 #user.profile.messages['message']からidを検索し添字を返す
 def get_message_index(messages, id):
     #messagesはlistで渡す
@@ -256,12 +269,13 @@ def mailbox(request, page=1):
     profile.save()
 
     #messageからMESSAGE_NUM件を表示する
+    inbox_message = filter_label_message(user_messages, 'INBOX', MESSAGE_NUM, page)
     messages = []
-    num_msg = len(user_messages)
+    num_msg = len(inbox_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
-        messages.append(user_messages[i])
+        messages.append(inbox_message[i])
     data = {'messages': messages}
     return render(request, 'recpos/mailbox.html', data)
 
