@@ -10,6 +10,7 @@ class Profile(models.Model):
     alias = models.EmailField(max_length=50, blank=True, default='')
     gmail_api_token = models.CharField(blank=True, null=True, max_length=1024, default='')
     messages = models.TextField(blank=True, null=True, default='{"messages": []}')
+    labels = models.TextField(blank=True, null=True, default='{"labels": []}')
     last_history_id = models.CharField(blank=True, null=True, max_length=1024, default='')
 
 # userが新規作成sされたときにProfileを作成する
