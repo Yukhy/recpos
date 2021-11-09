@@ -8,7 +8,7 @@
     <div class="card shadow rounded">
         <div class="card-header d-flex">
             <a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
-            <h6 class="ps-3">メールタイトル</h6>
+            <h6 class="ps-3">{{message.subject}}</h6>
             <div class="ms-auto">
                 <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-star"></i></a>
                 <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-trash"></i></a>
@@ -16,14 +16,15 @@
         </div>
         <div class="card-body">
             <div class="d-flex mb-2">
-                <h6 class="fw-bold">送信元</h6>
+                <h6 class="fw-bold">{{message.from_address.name}}  {{message.from_address.address}}</h6>
                 <div class="ms-auto">
-                    <small>時間</small>
+                    <small>{{message.date.year}}/{{message.date.month}}/{{message.date.date}}
+                        {{message.date.hour}}:{{message.date.minute}}</small>
                 </div>
             </div>
 
             <div>
-                メールメッセージ
+                {{message.text}}
             </div>
         </div>
     </div>
