@@ -17,7 +17,7 @@ class UserChangeForm(forms.ModelForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = "form-control"
             field.widget.attrs['type'] = "text"
-        self.fields['email'].widget.attrs['readonly'] = True
+            field.widget.attrs['readonly'] = True
 
 class ProfileChangeForm(forms.ModelForm):
 
