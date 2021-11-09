@@ -189,6 +189,18 @@ def get_alias_message(user_alias, messages, num, pagenum):
             alias_messages.append(message)
     return alias_messages
 
+#messageをラベルでフィルタリングする
+def filter_label_message(messages, labels, num, pagenum):
+    #messageはlistで渡す
+    #numは1ページに表示する件数
+    alias_messages = []
+    for message in messages:
+        if len(alias_messages) > num * pagenum:
+            break
+        if labels in message['labels']:
+            alias_messages.append(message)
+    return alias_messages
+
 #user.profile.messages['message']からidを検索し添字を返す
 def get_message_index(messages, id):
     #messagesはlistで渡す
@@ -258,12 +270,13 @@ def mailbox(request, page=1):
     profile.save()
 
     #messageからMESSAGE_NUM件を表示する
+    inbox_message = filter_label_message(user_messages, 'INBOX', MESSAGE_NUM, page)
     messages = []
-    num_msg = len(user_messages)
+    num_msg = len(inbox_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
-        messages.append(user_messages[i])
+        messages.append(inbox_message[i])
     data = {'messages': messages}
     return render(request, 'recpos/mailbox.html', data)
 
