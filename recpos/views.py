@@ -3,7 +3,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from config.settings import BASE_DIR, REFRESH_TOKEN
+from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR, REFRESH_TOKEN
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import base64
@@ -16,10 +16,10 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 
 MESSAGE_NUM = 20
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
 
 
 class Message:
+    index = None
     id = None
     unread = None
     labels = None
@@ -85,7 +85,7 @@ def gmail_get_service(user):
 
 
 #条件に合うメッセージのidをリストで返す
-def get_message_id(user_email, service, num, label, query=''):
+def get_message_id(user_email, service, num, label=None, query=None):
     messageIDlist = service.users().messages().list(userId=user_email, maxResults=num, labelIds=label, q=query).execute()
     idlist = []
     if 'messages' not in messageIDlist:
@@ -105,14 +105,17 @@ def get_message_content(user_email, service, id):
     from_address = None
     to_address = None
 
-    labels = MessageDetail['labelIds']
+    if 'labelIds' in MessageDetail:
+        labels = MessageDetail['labelIds']
+    else:
+        labels = []
 
     for header in MessageDetail['payload']['headers']:
         # 日付、送信元、件名を取得する
         if header['name'] == 'Date':
             date = decode_date(header['value'])
         elif header['name'] == 'From':
-            from_address = header['value']
+            from_address = decode_address(header['value'])
         elif header['name'] == 'To':
             to_address = header['value']
         elif header['name'] == 'Subject':
@@ -220,6 +223,15 @@ def decode_date(date):
     result['minute'] = time.group(2)
     return result
 
+#送り主を読みやすい形に変換する
+def decode_address(address):
+    result = re.search('"?(.*?)"?\s<(.*?)>',address)
+    from_address = {
+        'address': result.group(1),
+        'name': result.group(2),
+    }
+    return from_address
+
 #textをデコードする
 def base64_decode(b64_message):
     message = base64.urlsafe_b64decode(
@@ -275,6 +287,7 @@ def mailbox(request, page=1):
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
+        inbox_message[i]['index'] = i
         messages.append(inbox_message[i])
     data = {'messages': messages}
     return render(request, 'recpos/mailbox.html', data)
@@ -307,6 +320,7 @@ def alias(request, page):
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
+        alias_message[i]['index'] = i
         messages.append(alias_message[i])
     data = {'messages': messages}
     return render(request, 'recpos/mailbox.html', data)
@@ -319,7 +333,7 @@ def login(request):
     user_messages = json.loads(user.profile.messages)
     if user_messages['messages'] == []:
         service = gmail_get_service(user)
-        idlist = get_message_id(user.email, service, 100, 'INBOX')
+        idlist = get_message_id(user.email, service, 100)
         messages = []
         for id in idlist:
             if (sys.getsizeof(messages) >= 5242880):
