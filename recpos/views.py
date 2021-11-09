@@ -267,7 +267,7 @@ def mailbox(request, page=1):
         profile.messages = json.dumps({'messages':user_messages})
     profile.last_history_id = history_id
     profile.save()
-
+    
     #messageからMESSAGE_NUM件を表示する
     inbox_message = filter_label_message(user_messages, 'INBOX', MESSAGE_NUM, page)
     messages = []
@@ -331,3 +331,6 @@ def login(request):
         user.profile.last_history_id = service.users().getProfile(userId=user.email).execute()['historyId']
         user.profile.save()
     return redirect('recpos:index')
+
+def mail_detail(request):
+    return render(request, 'recpos/mail-detail.html')
