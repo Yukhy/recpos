@@ -334,7 +334,8 @@ def mailbox(request, label='INBOX', page=1):
     data = {
         'messages': messages,
         'labels': labels,
-        'label': label_name,
+        'label': {'id': label, 'name': label_name},
+        'page': {'now': str(page), 'prev': page-1, 'next': page+1},
         }
     return render(request, 'recpos/mailbox.html', data)
 
@@ -378,7 +379,8 @@ def alias(request, label='INBOX', page=1):
     data = {
         'messages': messages,
         'labels': labels,
-        'label': label_name,
+        'label': {'id': label, 'name': label_name},
+        'page': {'now': str(page), 'prev': page-1, 'next': page+1},
         }
     return render(request, 'recpos/mailbox.html', data)
 
