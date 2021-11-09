@@ -16,6 +16,8 @@ import json
 from .forms import UserChangeForm, ProfileChangeForm
 import sys
 
+MESSAGE_NUM = 20
+
 
 class Message:
     id = None
@@ -81,54 +83,6 @@ def gmail_get_service(user):
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-#削除予定
-#受信ボックス内のメールを30件返す
-""" def get_message_list(user_email, service):
-    #受信ボックス内のメールを30件返す
-    MessageList = []
-
-    # メールIDの一覧を取得する(最大30件)
-    messageIDlist = service.users().messages().list(userId=user_email, maxResults=30, labelIds='INBOX').execute()
-    # 該当するメールが存在しない場合は、処理中断
-    if messageIDlist['resultSizeEstimate'] == 0:
-        return MessageList
-    # メッセージIDを元に、メールの詳細情報を取得
-    for message in messageIDlist['messages']:
-        row = {}
-        row['ID'] = message['id']
-        MessageDetail = service.users().messages().get(userId=user_email, id=message['id']).execute()
-
-        if 'UNREAD' in MessageDetail['labelIds']:
-            row['Unread'] = True
-        else :
-            row['Unread'] = False
-
-        for header in MessageDetail['payload']['headers']:
-            # 日付、送信元、件名を取得する
-            if header['name'] == 'Date':
-                row['Date'] = header['value']
-            elif header['name'] == 'From':
-                row['From'] = header['value']
-            elif header['name'] == 'To':
-                row['To'] = header['value']
-            elif header['name'] == 'Subject':
-                row['Subject'] = header['value']
-
-        if 'data' in MessageDetail['payload']['body']:
-            b64_message = MessageDetail['payload']['body']['data']
-            row['Text'] = base64_decode(b64_message)
-        elif MessageDetail['payload']['parts'][0]['body']['size'] == 0:
-            if 'snippet' in MessageDetail:
-                row['Text'] = MessageDetail['snippet']
-            else:
-                row['Text'] = 'None Text'
-        # Such as text/html
-        elif MessageDetail['payload']['parts'] is not None:
-            b64_message = MessageDetail['payload']['parts'][0]['body']['data']
-            row['Text'] = base64_decode(b64_message)
-
-        MessageList.append(row)
-    return MessageList """
 
 #条件に合うメッセージのidをリストで返す
 def get_message_id(user_email, service, num, label, query=''):
@@ -156,7 +110,7 @@ def get_message_content(user_email, service, id):
     for header in MessageDetail['payload']['headers']:
         # 日付、送信元、件名を取得する
         if header['name'] == 'Date':
-            date = header['value']
+            date = decode_date(header['value'])
         elif header['name'] == 'From':
             from_address = header['value']
         elif header['name'] == 'To':
@@ -222,6 +176,18 @@ def change_by_history(user_email, service, messages, history_list):
                 messages[index] = msg.to_dict()
     return messages
 
+#alias宛のメールを取得する
+def get_alias_message(user_alias, messages, num, pagenum):
+    #messageはlistで渡す
+    #numは1ページに表示する件数
+    alias_messages = []
+    for message in messages:
+        if len(alias_messages) > num * pagenum:
+            break
+        if message['to_address'] == user_alias:
+            alias_messages.append(message)
+    return alias_messages
+
 #user.profile.messages['message']からidを検索し添字を返す
 def get_message_index(messages, id):
     #messagesはlistで渡す
@@ -232,11 +198,15 @@ def get_message_index(messages, id):
 
 #日付を読みやすい形に変換する
 def decode_date(date):
+    result = {}
     month = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    pattern = '([A-Z][a-z]{2}), (\d{1,2}) ([A-Z][a-z]{2}) (\d{4}) (\d{2}):(\d{2}):\d{2} \S*'
-    content = re.match(pattern, date)
-    result = '{0}/{1}/{2} {3} {4}:{5}'
-    return result.format(content.group(4), month.index(content.group(3)), content.group(2), content.group(1), content.group(5), content.group(6))  
+    result['year'] = int(re.search('\d{4}', date).group())
+    result['month'] = month.index(re.search('Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec', date).group())
+    result['date'] = int(re.search('\d{1,2}', date).group())
+    time = re.search('(\d{1,2}):(\d{1,2}):\d{1,2}', date)
+    result['hour'] = time.group(1)
+    result['minute'] = time.group(2)
+    return result
 
 #textをデコードする
 def base64_decode(b64_message):
@@ -271,7 +241,8 @@ def index(request):
     return render(request, 'recpos/index.html', params)
 
 @login_required
-def mailbox(request, num):
+def mailbox(request, page=1):
+    #messageの更新
     user = request.user
     service = gmail_get_service(user)
     profile = user.profile
@@ -285,12 +256,45 @@ def mailbox(request, num):
     profile.last_history_id = history_id
     profile.save()
 
+    #messageからMESSAGE_NUM件を表示する
     messages = []
     num_msg = len(user_messages)
-    for i in range(30*(num-1),30*(num)):
+    for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
         messages.append(user_messages[i])
+    data = {'messages': messages}
+    return render(request, 'recpos/mailbox.html', data)
+
+@login_required
+def alias(request, page):
+    user = request.user
+    service = gmail_get_service(user)
+    profile = user.profile
+    user_email = user.email
+    user_alias = profile.alias
+
+    #messageの更新
+    user_messages = json.loads(profile.messages)['messages']
+    last_history_id = profile.last_history_id
+    history_list, history_id = get_history_list(user_email, service, last_history_id)
+    if history_list != []:
+        user_messages = change_by_history(user_email, service, user_messages, history_list)
+        profile.messages = json.dumps({'messages':user_messages})
+    profile.last_history_id = history_id
+    profile.save()
+
+    if user_alias == '':
+        return redirect('recpos:mailbox')
+
+    #alias宛のmessageをMESSAGE_NUM件表示する
+    alias_message = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page)
+    messages = []
+    num_msg = len(alias_message)
+    for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
+        if i >= num_msg:
+            break
+        messages.append(alias_message[i])
     data = {'messages': messages}
     return render(request, 'recpos/mailbox.html', data)
 

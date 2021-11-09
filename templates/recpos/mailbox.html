@@ -30,7 +30,7 @@
                         <td>
                             <a href="#" class="text-dark"><i class="bi bi-trash"></i></button></a>
                         <td>
-                        <td class="fw-light small">{{message.date}}</td>
+                        <td class="fw-light small">{% if message.date.year != 2021 %}{{message.date.year}}/{% endif %}{{message.date.month}}/{{message.date.date}}  {{message.date.hour}}:{{message.date.minute}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
