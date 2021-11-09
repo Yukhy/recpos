@@ -78,11 +78,21 @@
                 class="bi bi-inbox"></i>&ensp;Inbox</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-send"></i>&ensp;Sent</a>
+            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'STARRED' %}">&ensp;<i class="bi bi-star"></i>&ensp;Star</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-trash"></i>&ensp;Trash</a>
+            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'SENT' %}">&ensp;<i class="bi bi-send"></i>&ensp;Sent</a>
           </li>
+          <li>
+            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'TRASH' %}">&ensp;<i class="bi bi-trash"></i>&ensp;Trash</a>
+          </li>
+        {% for label in labels %}
+          <!-- {% if label.type == user %} -->
+          <li>
+            <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-journal-text"></i>&ensp;aa{{label.name}}</a>
+          </li>
+          <!-- {% endif %} -->
+        {% endfor %}
         </ul>
       </div>
       <div class="mb-4">

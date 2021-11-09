@@ -3,7 +3,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from config.settings import BASE_DIR, REFRESH_TOKEN
+from config.settings import SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, BASE_DIR, REFRESH_TOKEN
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import base64
@@ -16,10 +16,11 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 
 MESSAGE_NUM = 20
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
+DEFAULT_SAVE_MESSAGE_NUM = 100
 
 
 class Message:
+    index = None
     id = None
     unread = None
     labels = None
@@ -48,6 +49,24 @@ class Message:
         message['from_address'] = self.from_address
         message['to_address'] = self.to_address
         return message
+
+class Label:
+    id = None
+    name = None
+    type = None
+    
+    def __init__(self, id:str, name:str, type:str):
+        self.id = id
+        self.name = name
+        self.type = type
+        
+    def to_dict(self):
+        label = {}
+        label['id'] = self.id
+        label['name'] = self.name
+        label['type'] = self.type
+        return label
+
 
 #userのtokenを確認し、Gmail APIのserviceを返す
 def gmail_get_service(user):
@@ -83,9 +102,21 @@ def gmail_get_service(user):
     service = build('gmail', 'v1', credentials=creds)
     return service
 
+#labelのリストを取得する
+def get_labels(user_email, service):
+    labels = service.users().labels().list(userId=user_email).execute().get('labels', [])
+    user_labels = []
+    for label in labels:
+        if 'labelListVisibility'in label and label['labelListVisibility']=='labelHide':
+            continue
+        id = label['id']
+        name = label['name']
+        type = label['type']
+        user_labels.append(Label(id, name, type).to_dict())
+    return user_labels
 
 #条件に合うメッセージのidをリストで返す
-def get_message_id(user_email, service, num, label, query=''):
+def get_message_id(user_email, service, num, label=None, query=None):
     messageIDlist = service.users().messages().list(userId=user_email, maxResults=num, labelIds=label, q=query).execute()
     idlist = []
     if 'messages' not in messageIDlist:
@@ -105,14 +136,17 @@ def get_message_content(user_email, service, id):
     from_address = None
     to_address = None
 
-    labels = MessageDetail['labelIds']
+    if 'labelIds' in MessageDetail:
+        labels = MessageDetail['labelIds']
+    else:
+        labels = []
 
     for header in MessageDetail['payload']['headers']:
         # 日付、送信元、件名を取得する
         if header['name'] == 'Date':
             date = decode_date(header['value'])
         elif header['name'] == 'From':
-            from_address = header['value']
+            from_address = decode_address(header['value'])
         elif header['name'] == 'To':
             to_address = header['value']
         elif header['name'] == 'Subject':
@@ -177,14 +211,14 @@ def change_by_history(user_email, service, messages, history_list):
     return messages
 
 #alias宛のメールを取得する
-def get_alias_message(user_alias, messages, num, pagenum):
+def get_alias_message(user_alias, messages, num, pagenum, label):
     #messageはlistで渡す
     #numは1ページに表示する件数
     alias_messages = []
     for message in messages:
         if len(alias_messages) > num * pagenum:
             break
-        if message['to_address'] == user_alias:
+        if message['to_address'] == user_alias and label in message['labels']:
             alias_messages.append(message)
     return alias_messages
 
@@ -220,6 +254,15 @@ def decode_date(date):
     result['minute'] = time.group(2)
     return result
 
+#送り主を読みやすい形に変換する
+def decode_address(address):
+    result = re.search('"?(.*?)"?\s<(.*?)>',address)
+    from_address = {
+        'address': result.group(1),
+        'name': result.group(2),
+    }
+    return from_address
+
 #textをデコードする
 def base64_decode(b64_message):
     message = base64.urlsafe_b64decode(
@@ -241,7 +284,11 @@ def mark_as_unread(user_email, service, id):
 @login_required
 def index(request):
     user = request.user
-    params = {'userform':UserChangeForm(instance=user), 'profileform':ProfileChangeForm(instance=user.profile)}
+    params = {
+        'userform': UserChangeForm(instance=user),
+        'profileform': ProfileChangeForm(instance=user.profile),
+        'labels': json.loads(user.profile.labels),
+        }
     if request.method == 'POST':
         form1 = UserChangeForm(request.POST, instance=user)
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
@@ -253,7 +300,7 @@ def index(request):
     return render(request, 'recpos/index.html', params)
 
 @login_required
-def mailbox(request, page=1):
+def mailbox(request, label='INBOX', page=1):
     #messageの更新
     user = request.user
     service = gmail_get_service(user)
@@ -269,18 +316,31 @@ def mailbox(request, page=1):
     profile.save()
     
     #messageからMESSAGE_NUM件を表示する
-    inbox_message = filter_label_message(user_messages, 'INBOX', MESSAGE_NUM, page)
+    inbox_message = filter_label_message(user_messages, label, MESSAGE_NUM, page)
     messages = []
     num_msg = len(inbox_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
+        inbox_message[i]['index'] = i
         messages.append(inbox_message[i])
-    data = {'messages': messages}
+
+    labels = json.loads(profile.labels)
+    label_name = label
+    for l in labels:
+        if l['id'] == label:
+            label_name = l['name']
+
+    data = {
+        'messages': messages,
+        'labels': labels,
+        'label': {'id': label, 'name': label_name},
+        'page': {'now': str(page), 'prev': page-1, 'next': page+1},
+        }
     return render(request, 'recpos/mailbox.html', data)
 
 @login_required
-def alias(request, page):
+def alias(request, label='INBOX', page=1):
     user = request.user
     service = gmail_get_service(user)
     profile = user.profile
@@ -301,14 +361,27 @@ def alias(request, page):
         return redirect('recpos:mailbox')
 
     #alias宛のmessageをMESSAGE_NUM件表示する
-    alias_message = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page)
+    alias_message = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
     messages = []
     num_msg = len(alias_message)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
+        alias_message[i]['index'] = i
         messages.append(alias_message[i])
-    data = {'messages': messages}
+
+    labels = json.loads(profile.labels)
+    label_name = label
+    for l in labels:
+        if l['id'] == label:
+            label_name = l['name']
+
+    data = {
+        'messages': messages,
+        'labels': labels,
+        'label': {'id': label, 'name': label_name},
+        'page': {'now': str(page), 'prev': page-1, 'next': page+1},
+        }
     return render(request, 'recpos/mailbox.html', data)
 
 def privacy_policy(request):
@@ -317,9 +390,9 @@ def privacy_policy(request):
 def login(request):
     user = request.user
     user_messages = json.loads(user.profile.messages)
+    service = gmail_get_service(user)
     if user_messages['messages'] == []:
-        service = gmail_get_service(user)
-        idlist = get_message_id(user.email, service, 100, 'INBOX')
+        idlist = get_message_id(user.email, service, DEFAULT_SAVE_MESSAGE_NUM)
         messages = []
         for id in idlist:
             if (sys.getsizeof(messages) >= 5242880):
@@ -329,7 +402,8 @@ def login(request):
         user_messages = {'messages':messages}
         user.profile.messages = json.dumps(user_messages)
         user.profile.last_history_id = service.users().getProfile(userId=user.email).execute()['historyId']
-        user.profile.save()
+    user.profile.labels = json.dumps(get_labels(user.email, service))
+    user.profile.save()
     return redirect('recpos:index')
 
 def mail_detail(request):
