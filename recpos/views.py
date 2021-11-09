@@ -232,10 +232,7 @@ def index(request):
     if request.method == 'POST':
         form1 = UserChangeForm(request.POST, instance=user)
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
-        print(form1.is_valid())
-        print(form2.is_valid())
         if form1.is_valid() and form2.is_valid():
-            print("ok")
             form1.save()
             form2.save()
             return redirect('recpos:index')
