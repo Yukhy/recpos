@@ -54,6 +54,10 @@ body{
   border-left: 0.25rem solid #3F51B5!important;
 }
 
+.o-border-left-primary{
+  border-left: 0.25rem solid #007bff!important;
+}
+
 .o-border-left-danger{
   border-left: 0.25rem solid #dc3545!important;
 }
@@ -72,6 +76,30 @@ body{
 
 .inactive{
   display: none;
+}
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  
+}
+
+
+.o-mailbox-read{
+  background-color: #f2f5f5cc;
+  border-left: 0.25rem solid #f2f5f5cc!important;
+}
+
+.o-mailbox tr{
+  cursor: pointer;
+}
+
+.o-mailbox tr:hover td{
+  box-shadow: 0 .25rem #00000013, 0 -0.25rem #00000013!important;
 }
 
 
