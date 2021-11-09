@@ -69,7 +69,7 @@
           <small class="o-nav-title mb-1 fw-bold">MAILBOX&ensp;<span class="badge bg-primary">Alias</span></small>
           <!--スイッチがTrueのときに↑のspanを表示-->
           <div class="form-check form-switch ms-auto">
-            <input class="form-check-input" type="checkbox" role="switch">
+            <input class="form-check-input ms-0" type="checkbox" role="switch">
           </div>
         </div>
         <ul class="navbar-nav justify-content-end">
@@ -96,22 +96,32 @@
         </ul>
       </div>
       <div class="mb-4">
-        <small class="o-nav-title mb-1 fw-bold">COMPANY LIST</small>
+        <small class="o-nav-title mb-1 fw-bold">RECPOS EXTENTIONS</small>
         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
           <li>
             <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-collection"></i>&ensp;Company List</a>
           </li>
-
+          <li>
+            <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-list-task"></i>&ensp;My Task</a>
+          </li>
         </ul>
       </div>
       
     </div>
+    
     <footer>
+      <div class="card bg-primary bg-gradient w-75 mx-auto">
+        <div class="card-body text-center">
+          <h1 class="fw-bold">RECPOS</h1>
+          <a class="nav-link d-inline px-2 py-0 rounded fw-normal" href="https://github.com/Yukhy/recpos"><i class="bi bi-github"></i></a><br>
+          <a href="{% url 'recpos:privacy-policy' %}" class="nav-link d-inline px-2 py-0 rounded fw-normal small">Privacy Policy</a>
+        <a href="{% url 'recpos:open-source' %}" class="nav-link d-inline px-2 py-0 rounded fw-normal small">OpenSource License</a>
+        </div>
+      </div>
       <div class="text-center">
-        <a href="{% url 'recpos:privacy-policy' %}" class="nav-link d-inline px-2 py-0 rounded fw-normal small">Privacy Policy</a>
-        <a href="#" class="nav-link d-inline px-2 py-0 rounded fw-normal small">OpenSource License</a><br>
         <small>Copyright © 2021 Ryuta Noguchi, Yukihiro Kozai</small>
       </div>
+
     </footer>
   </aside>
 
