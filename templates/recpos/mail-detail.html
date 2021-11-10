@@ -7,11 +7,19 @@
 <div class="px-2 col-md mb-3">
     <div class="card shadow rounded">
         <div class="card-header d-flex">
-            <a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
+            <a href="{{url}}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
             <h6 class="ps-3">{{message.subject}}</h6>
             <div class="ms-auto">
+                {% if 'STARRED' in message.labels %}
+                <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-star-fill"></i></a>
+                {% else %}
                 <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-star"></i></a>
+                {% endif %}
+                {% if 'TRASH' in message.labels %}
+                <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-trash-fill"></i></a>
+                {% else %}
                 <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-trash"></i></a>
+                {% endif %}
             </div>
         </div>
         <div class="card-body">
