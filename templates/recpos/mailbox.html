@@ -61,6 +61,7 @@
                             {% if message.date.year != 2021 %}{{message.date.year}}/{% endif %}{{message.date.month}}/{{message.date.date}}
                             {{message.date.hour}}:{{message.date.minute}}</td>
                     </tr>
+                    <!-- ↓とりあえずのdetailのURLです -->
                     <a class="dropdown-item" href="{% url 'recpos:mail-detail' %}{{message.index}}/{{message.url}}"><i class="bi bi-star"></i>detail</a>
                     {% endfor %}
                 </tbody>
