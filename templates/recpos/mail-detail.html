@@ -11,9 +11,9 @@
             <h6 class="ps-3">{{message.subject}}</h6>
             <div class="ms-auto">
                 {% if 'STARRED' in message.labels %}
-                <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-star-fill"></i></a>
+                <a class="btn btn-sm btn-secondary" href="{% url 'recpos:unstar' %}{{index}}/{{prev}}"><i class="bi bi-star-fill"></i></a>
                 {% else %}
-                <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-star"></i></a>
+                <a class="btn btn-sm btn-secondary" href="{% url 'recpos:star' %}{{index}}/{{prev}}"><i class="bi bi-star"></i></a>
                 {% endif %}
                 {% if 'TRASH' in message.labels %}
                 <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-trash-fill"></i></a>

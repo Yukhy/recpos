@@ -287,6 +287,18 @@ def mark_as_unread(user_email, service, id):
     service.users().messages().modify(userId=user_email, id=id, body=query).execute()
     return
 
+# メールにスターをつける
+def mark_as_star(user_email, service, id):
+    query = {'addLabelIds': ['STARRED']}
+    service.users().messages().modify(userId=user_email, id=id, body=query).execute()
+    return
+
+# メールのスターを外す
+def mark_as_unstar(user_email, service, id):
+    query = {'removeLabelIds': ['STARRED']}
+    service.users().messages().modify(userId=user_email, id=id, body=query).execute()
+    return
+
 # 略称されたURLをデコードする
 def decode_url(user_labels, omiturl):
     # <aliasの有無:A><labelの引数(user_labelの引数):l><page:p>
@@ -426,10 +438,38 @@ def mail_detail(request, index, prev):
         mark_as_read(request.user.email, service, message['id'])
     data = {
         'message': user_messages[index],
+        'index': index,
+        'prev': prev,
         # 前のページに戻るためのURL
         'url': DOMEIN + decode_url(user_labels, prev),
     }
     return render(request, 'recpos/mail-detail.html', data)
+
+def star(request, index, prev):
+    user = request.user
+    service = gmail_get_service(user)
+    user_messages = json.loads(user.profile.messages)['messages']
+    message = user_messages[index]
+    mark_as_star(user.email, service, message['id'])
+    if 'STARRED' not in message['labels']:
+        message['labels'].append('STARRED')
+        user_messages[index] = message
+        user.profile.messages = json.dumps({'messages':user_messages})
+        user.profile.save()
+    return redirect(DOMEIN + 'mailbox/detail/' + str(index) + '/' + prev + '/')
+
+def unstar(request, index, prev):
+    user = request.user
+    service = gmail_get_service(user)
+    user_messages = json.loads(user.profile.messages)['messages']
+    message = user_messages[index]
+    mark_as_unstar(user.email, service, message['id'])
+    if 'STARRED' in message['labels']:
+        message['labels'].remove('STARRED')
+        user_messages[index] = message
+        user.profile.messages = json.dumps({'messages':user_messages})
+        user.profile.save()
+    return redirect(DOMEIN + 'mailbox/detail/' + str(index) + '/' + prev + '/')
 
 def privacy_policy(request):
     return render(request, 'recpos/privacy-policy.html')
