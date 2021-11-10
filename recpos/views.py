@@ -146,7 +146,7 @@ def get_message_content(user_email, service, id):
         if header['name'] == 'Date':
             date = decode_date(header['value'])
         elif header['name'] == 'From':
-            from_address = decode_address(header['value'])
+            from_address = header['value']
         elif header['name'] == 'To':
             to_address = header['value']
         elif header['name'] == 'Subject':
