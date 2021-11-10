@@ -17,10 +17,12 @@ import sys
 
 MESSAGE_NUM = 20
 DEFAULT_SAVE_MESSAGE_NUM = 10
+DOMEIN = "http://localhost:8000/"
 
 
 class Message:
     index = None
+    url = None
     id = None
     unread = None
     labels = None
@@ -68,27 +70,27 @@ class Label:
         return label
 
 
-#userのtokenを確認し、Gmail APIのserviceを返す
+# userのtokenを確認し、Gmail APIのserviceを返す
 def gmail_get_service(user):
     creds = None
     token_file_path = BASE_DIR+'/recpos/gmail_tokens/'+user.email+'.json'
     user_profile = user.profile
-    #userがtokenをもっていたらcredsに取り出す
+    # userがtokenをもっていたらcredsに取り出す
     if user_profile.gmail_api_token!='':
         user_token = user_profile.gmail_api_token
-        #api_tokenにrefresh_tokenが存在しない場合があるため追加
+        # api_tokenにrefresh_tokenが存在しない場合があるため追加
         if 'refresh_token' not in user_token:
             api_token = ast.literal_eval(user_token)
             api_token['refresh_token'] = REFRESH_TOKEN
             user_token = api_token
-        #user.gmail_api_tokenからtoken.jasonを一時的に作成
+        # user.gmail_api_tokenからtoken.jasonを一時的に作成
             with open(token_file_path, 'w') as tmp_token:
                 tmp_token.write(json.dumps(user_token))
         else :
             with open(token_file_path, 'w') as tmp_token:
                 tmp_token.write(user_token)
         creds = Credentials.from_authorized_user_file(token_file_path, SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE)
-    #tokenの有効期限が切れていたらリフレッシュ、なかったら作成し、userに格納する
+    # tokenの有効期限が切れていたらリフレッシュ、なかったら作成し、userに格納する
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -102,7 +104,7 @@ def gmail_get_service(user):
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-#labelのリストを取得する
+# labelのリストを取得する
 def get_labels(user_email, service):
     labels = service.users().labels().list(userId=user_email).execute().get('labels', [])
     user_labels = []
@@ -115,7 +117,7 @@ def get_labels(user_email, service):
         user_labels.append(Label(id, name, type).to_dict())
     return user_labels
 
-#条件に合うメッセージのidをリストで返す
+# 条件に合うメッセージのidをリストで返す
 def get_message_id(user_email, service, num, label=None, query=None):
     messageIDlist = service.users().messages().list(userId=user_email, maxResults=num, labelIds=label, q=query).execute()
     idlist = []
@@ -125,7 +127,7 @@ def get_message_id(user_email, service, num, label=None, query=None):
         idlist.append(message['id'])
     return idlist
 
-#メッセージを取得して、Messageに格納して返す
+# メッセージを取得して、Messageに格納して返す
 def get_message_content(user_email, service, id):
     MessageDetail = service.users().messages().get(userId=user_email, id=id).execute()
 
@@ -167,24 +169,24 @@ def get_message_content(user_email, service, id):
 
     return Message(id, labels, subject, text, date, from_address, to_address)
 
-#HistoryのリストとHistoryIdを返す
+# HistoryのリストとHistoryIdを返す
 def get_history_list(user_email, service, historyid, label=None, history_type=None):
     historylist = []
     pagetoken=None
     while True:
-        history = service.users().history().list(userId=user_email, maxResults=50, pageToken=pagetoken, startHistoryId=historyid, labelId=label).execute()
+        history = service.users().history().list(userId=user_email, maxResults=500, pageToken=pagetoken, startHistoryId=historyid, labelId=label, historyTypes = history_type).execute()
+        historyid = history['historyId']
         if 'history' not in history:
             break
         historylist += history['history']
         if 'nextPageToken' not in history:
             break
         pegetoken = history['nextPageToken']
-    historyid = history['historyId']
     return historylist, historyid
 
-#Historyからmessagesを更新する
+# Historyからmessagesを更新する
 def change_by_history(user_email, service, messages, history_list):
-    #messagesはlistで渡す
+    # messagesはlistで渡す
     for history in history_list:
         if 'messagesAdded' in history:
             for message in history['messagesAdded']:
@@ -210,10 +212,10 @@ def change_by_history(user_email, service, messages, history_list):
                 messages[index] = msg.to_dict()
     return messages
 
-#alias宛のメールを取得する
+# alias宛のメールを取得する
 def get_alias_message(user_alias, messages, num, pagenum, label):
-    #messageはlistで渡す
-    #numは1ページに表示する件数
+    # messageはlistで渡す
+    # numは1ページに表示する件数
     alias_messages = []
     index_list = []
     for index, message in enumerate(messages):
@@ -224,10 +226,10 @@ def get_alias_message(user_alias, messages, num, pagenum, label):
             index_list.append(index)
     return alias_messages, index_list
 
-#messageをラベルでフィルタリングする
+# messageをラベルでフィルタリングする
 def filter_label_message(messages, labels, num, pagenum):
-    #messageはlistで渡す
-    #numは1ページに表示する件数
+    # messageはlistで渡す
+    # numは1ページに表示する件数
     filter_messages = []
     index_list = []
     for index, message in enumerate(messages):
@@ -238,15 +240,15 @@ def filter_label_message(messages, labels, num, pagenum):
             index_list.append(index)
     return filter_messages, index_list
 
-#user.profile.messages['message']からidを検索し添字を返す
+# user.profile.messages['message']からidを検索し添字を返す
 def get_message_index(messages, id):
-    #messagesはlistで渡す
+    # messagesはlistで渡す
     for index in range(len(messages)):
         if messages[index]['id'] == id:
             break
     return index
 
-#日付を読みやすい形に変換する
+# 日付を読みやすい形に変換する
 def decode_date(date):
     result = {}
     month = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -258,7 +260,7 @@ def decode_date(date):
     result['minute'] = time.group(2)
     return result
 
-#送り主を読みやすい形に変換する
+# 送り主を読みやすい形に変換する
 def decode_address(address):
     result = re.search('"?(.*?)"?\s?<(.*?)>',address)
     from_address = {
@@ -267,23 +269,37 @@ def decode_address(address):
     }
     return from_address
 
-#textをデコードする
+# textをデコードする
 def base64_decode(b64_message):
     message = base64.urlsafe_b64decode(
         b64_message + '=' * (-len(b64_message) % 4)).decode(encoding='utf-8')
     return message
 
-#メールを既読にする
+# メールを既読にする
 def mark_as_read(user_email, service, id):
     query = {'removeLabelIds': ['UNREAD']}
     service.users().messages().modify(userId=user_email, id=id, body=query).execute()
     return
 
-#メールを未読にする
+# メールを未読にする
 def mark_as_unread(user_email, service, id):
     query = {'addLabelIds': ['UNREAD']}
     service.users().messages().modify(userId=user_email, id=id, body=query).execute()
     return
+
+# 略称されたURLをデコードする
+def decode_url(user_labels, omiturl):
+    # <aliasの有無:A><labelの引数(user_labelの引数):l><page:p>
+    url = "mailbox/"
+    alias = re.match('A.*',omiturl)
+    if alias:
+        url = "alias/" + url
+    labelpage = re.search("A?l([\d+]|TRASH)p(\d+)",omiturl)
+    if labelpage.group(1) == 'TRASH':
+        url += 'TRASH' + '/' + str(labelpage.group(2)) + '/'
+    else:
+        url += user_labels[int(labelpage.group(1))]['name'] + '/' + str(labelpage.group(2)) + '/'
+    return url
 
 @login_required
 def index(request):
@@ -305,7 +321,7 @@ def index(request):
 
 @login_required
 def mailbox(request, label='INBOX', page=1):
-    #messageの更新
+    # messageの更新
     user = request.user
     service = gmail_get_service(user)
     profile = user.profile
@@ -318,8 +334,16 @@ def mailbox(request, label='INBOX', page=1):
         profile.messages = json.dumps({'messages':user_messages})
     profile.last_history_id = history_id
     profile.save()
+
+    labels = json.loads(profile.labels)
+    label_name = label
+    label_index = label
+    for l in labels:
+        if l['id'] == label:
+            label_name = l['name']
+            label_index = labels.index(l)
     
-    #messageからMESSAGE_NUM件を表示する
+    # messageからMESSAGE_NUM件を表示する
     inbox_message, index_list = filter_label_message(user_messages, label, MESSAGE_NUM, page)
     messages = []
     num_msg = len(inbox_message)
@@ -327,13 +351,11 @@ def mailbox(request, label='INBOX', page=1):
         if i >= num_msg:
             break
         inbox_message[i]['index'] = index_list[i]
+        # detailページから戻ってくるために、前のURLを省略してmessageに保存する
+        # 省略されたURLはdetailのURLの後ろにつける
+        # <aliasの有無:A><labelの引数(user_labelの引数):l><page:p>
+        inbox_message[i]['url'] = "l" + str(label_index) + "p" + str(page)
         messages.append(inbox_message[i])
-
-    labels = json.loads(profile.labels)
-    label_name = label
-    for l in labels:
-        if l['id'] == label:
-            label_name = l['name']
 
     data = {
         'messages': messages,
@@ -351,7 +373,7 @@ def alias(request, label='INBOX', page=1):
     user_email = user.email
     user_alias = profile.alias
 
-    #messageの更新
+    # messageの更新
     user_messages = json.loads(profile.messages)['messages']
     last_history_id = profile.last_history_id
     history_list, history_id = get_history_list(user_email, service, last_history_id)
@@ -364,7 +386,14 @@ def alias(request, label='INBOX', page=1):
     if user_alias == '':
         return redirect('recpos:mailbox')
 
-    #alias宛のmessageをMESSAGE_NUM件表示する
+    labels = json.loads(profile.labels)
+    label_name = label
+    for l in labels:
+        if l['id'] == label:
+            label_name = l['name']
+            label_index = labels.index(l)
+
+    # alias宛のmessageをMESSAGE_NUM件表示する
     alias_message, index_list = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
     messages = []
     num_msg = len(alias_message)
@@ -372,13 +401,11 @@ def alias(request, label='INBOX', page=1):
         if i >= num_msg:
             break
         alias_message[i]['index'] = index_list[i]
+        # detailページから戻ってくるために、前のURLを省略してmessageに保存する
+        # 省略されたURLはdetailのURLの後ろにつける
+        # <aliasの有無:A><labelの引数(user_labelの引数):l><page:p>
+        alias_message[i]['url'] = "A" + "l" + str(label_index) + "p" + str(page)
         messages.append(alias_message[i])
-
-    labels = json.loads(profile.labels)
-    label_name = label
-    for l in labels:
-        if l['id'] == label:
-            label_name = l['name']
 
     data = {
         'messages': messages,
@@ -389,10 +416,18 @@ def alias(request, label='INBOX', page=1):
     return render(request, 'recpos/mailbox.html', data)
 
 @login_required
-def mail_detail(request, index):
+def mail_detail(request, index, prev):
+    # detailページから戻ってくるために、前のURLを省略してmessageに保存する(views.mailbox,vews.aliasで行う)
     user_messages = json.loads(request.user.profile.messages)['messages']
+    message = user_messages[index]
+    user_labels = json.loads(request.user.profile.labels)
+    if 'UNREAD' in message['labels']:
+        service = gmail_get_service(request.user)
+        mark_as_read(request.user.email, service, message['id'])
     data = {
         'message': user_messages[index],
+        # 前のページに戻るためのURL
+        'url': DOMEIN + decode_url(user_labels, prev),
     }
     return render(request, 'recpos/mail-detail.html', data)
 
