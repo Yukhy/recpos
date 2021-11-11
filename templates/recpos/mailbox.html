@@ -6,76 +6,91 @@
 
 <div class="px-2 col-md mb-3">
     <div class="card shadow rounded">
-        <div class="card-header d-flex">
-            <h6>{{ label.name }}</h6>
-            <div class="ms-auto">
-                <a class="btn btn-sm btn-secondary" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-menu px-2">
-                    <a class="dropdown-item" href="#"><i class="bi bi-star"></i>&ensp;スターをつける</a>
-                    <a class="dropdown-item" href="#"><i class="bi bi-trash"></i>&ensp;削除</a>
-                </ul>
-                <a onclick="window.location.reload(true);" class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
-                {% if page.now != '1' %}
-                <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.prev}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
-                {% endif %}
-                <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.next}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+        {% if not alias %}
+        <form class="" action="{% url 'recpos:mailbox' %}" method="post" enctype="multipart/form-data">
+        {% else %}
+        <form class="" action="{% url 'recpos:alias' %}" method="post" enctype="multipart/form-data">
+        {% endif %}
+            {% csrf_token %}
+            <div class="card-header d-flex">
+                <h6>{{ label.name }}</h6>
+                <div class="ms-auto">
+                    <a class="btn btn-sm btn-secondary" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu px-2">
+                        <button class="dropdown-item" name="type" value="star" type="submit"><i class="bi bi-star"></i>&ensp;スターをつける</button>
+                        <button class="dropdown-item" name="type" value="trash" type="submit"><i class="bi bi-trash"></i>&ensp;削除</button>
+                    </ul>
+                    {% if not alias %}
+                    <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.now}}" class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
+                    {% if page.now != '1' %}
+                    <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.prev}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
+                    {% endif %}
+                    <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.next}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+                    {% else %}
+                    <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.now}}" class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
+                    {% if page.now != '1' %}
+                    <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.prev}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
+                    {% endif %}
+                    <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.next}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        <div class="card-body p-0">
-            <table class="table o-mailbox">
-                <tbody>
-                    {% for message in messages %}
-                    <!-- 未読の場合 -->
-                    {% if 'UNREAD' in message.labels %}
-                    <tr class="o-border-left-primary">
-                        <td style="width:30px;">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                            </div>
-                        </td>
-                        <td class="fw-bold" style="width:300px;">
-                            {{message.from_address.name}}
-                        </td>
-                        <td class="fw-bold" style="width: 100%;">
-                            {{message.subject}}
-                        </td>
-                        {% else %}
-                    <tr class="o-mailbox-read">
-                        <td style="width:30px;">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                            </div>
-                        </td>
-                        <td style="width:300px;">
-                            {{message.from_address.address}}
-                        </td>
-                        <td style="width: 100%;">
-                            {{message.subject}}
-                        </td>
-                        {% endif %}
-                        
-                        <td class="small" style="width:90px;">
-                            {% if message.date.year != 2021 %}{{message.date.year}}/{% endif %}{{message.date.month}}/{{message.date.date}}
-                            {{message.date.hour}}:{{message.date.minute}}</td>
-                    </tr>
-                    <!-- ↓とりあえずのdetailのURLです -->
-                    <a class="dropdown-item" href="{% url 'recpos:mail-detail' %}{{message.index}}/{{message.url}}"><i class="bi bi-star"></i>detail</a>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="card-footer d-flex">
-            <div class="ms-auto">
-                <a onclick="window.location.reload(true);" class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
-                {% if page.now != '1' %}
-                <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.prev}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
-                {% endif %}
-                <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.next}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+            <div class="card-body p-0">
+                <table class="table o-mailbox">
+                    <tbody>
+                        {% for message in messages %}
+                        <!-- 未読の場合 -->
+                        {% if 'UNREAD' in message.labels %}
+                        <tr class="o-border-left-primary">
+                            <td style="width:30px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="index" value="{{message.index}}" id="flexCheckDefault">
+                                </div>
+                            </td>
+                            <td class="fw-bold" style="width:300px;">
+                                {{message.from_address.name}}
+                            </td>
+                            <td class="fw-bold" style="width: 100%;">
+                                {{message.subject}}
+                            </td>
+                            {% else %}
+                        <tr class="o-mailbox-read">
+                            <td style="width:30px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="index" value="{{message.index}}" id="flexCheckDefault">
+                                </div>
+                            </td>
+                            <td style="width:300px;">
+                                {{message.from_address.address}}
+                            </td>
+                            <td style="width: 100%;">
+                                {{message.subject}}
+                            </td>
+                            {% endif %}
+                            
+                            <td class="small" style="width:90px;">
+                                {% if message.date.year != 2021 %}{{message.date.year}}/{% endif %}{{message.date.month}}/{{message.date.date}}
+                                {{message.date.hour}}:{{message.date.minute}}</td>
+                        </tr>
+                        <!-- ↓とりあえずのdetailのURLです -->
+                        <a class="dropdown-item" href="{% url 'recpos:mail-detail' %}{{message.index}}/{{message.url}}"><i class="bi bi-star"></i>detail</a>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </div>
+            <div class="card-footer d-flex">
+                <div class="ms-auto">
+                    <a onclick="window.location.reload(true);" class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
+                    {% if page.now != '1' %}
+                    <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.prev}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
+                    {% endif %}
+                    <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.next}}" class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
