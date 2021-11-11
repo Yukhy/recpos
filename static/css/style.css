@@ -88,6 +88,19 @@ td {
   
 }
 
+.mail-table {
+  position:relative;
+}
+
+.mail-table .mail-link {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 30px;
+  width: calc(100% - 30px);
+  height: 100%;
+}
+
 
 .o-mailbox-read{
   background-color: #f2f5f5cc;
