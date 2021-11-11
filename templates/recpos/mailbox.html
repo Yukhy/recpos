@@ -85,10 +85,10 @@
                                     {{message.subject}}
                                 </td>
                             {% endif %}
-
                                 <td class="small" style="width:90px;">
                                     {% if message.date.year != 2021 %}{{message.date.year}}/{% endif %}{{message.date.month}}/{{message.date.date}}
-                                    {{message.date.hour}}:{{message.date.minute}}</td>
+                                    {{message.date.hour}}:{{message.date.minute}}
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
