@@ -299,6 +299,18 @@ def mark_as_unstar(user_email, service, id):
     service.users().messages().modify(userId=user_email, id=id, body=query).execute()
     return
 
+# メールをTRASHに移動する
+def move_to_trash(user_email, service, id, labels):
+    query = {'addLabelIds': ['TRASH'], 'removeLabelIds': labels}
+    service.users().messages().modify(userId=user_email, id=id, body=query).execute()
+    return
+
+# メールをTRASHから戻す
+def put_back_message(user_email, service, id):
+    query = {'addLabelIds': ['INBOX'], 'removeLabelIds': ['TRASH']}
+    service.users().messages().modify(userId=user_email, id=id, body=query).execute()
+    return
+
 # 略称されたURLをデコードする
 def decode_url(user_labels, omiturl):
     # <aliasの有無:A><labelの引数(user_labelの引数):l><page:p>
@@ -466,6 +478,32 @@ def unstar(request, index, prev):
     mark_as_unstar(user.email, service, message['id'])
     if 'STARRED' in message['labels']:
         message['labels'].remove('STARRED')
+        user_messages[index] = message
+        user.profile.messages = json.dumps({'messages':user_messages})
+        user.profile.save()
+    return redirect(DOMEIN + 'mailbox/detail/' + str(index) + '/' + prev + '/')
+
+def trash(request, index, prev):
+    user = request.user
+    service = gmail_get_service(user)
+    user_messages = json.loads(user.profile.messages)['messages']
+    message = user_messages[index]
+    move_to_trash(user.email, service, message['id'], message['labels'])
+    if 'TRASH' not in message['labels']:
+        message['labels'] = ['TRASH']
+        user_messages[index] = message
+        user.profile.messages = json.dumps({'messages':user_messages})
+        user.profile.save()
+    return redirect(DOMEIN + 'mailbox/detail/' + str(index) + '/' + prev + '/')
+
+def putback(request, index, prev):
+    user = request.user
+    service = gmail_get_service(user)
+    user_messages = json.loads(user.profile.messages)['messages']
+    message = user_messages[index]
+    put_back_message(user.email, service, message['id'])
+    if 'TRASH' in message['labels']:
+        message['labels'] = ['INBOX']
         user_messages[index] = message
         user.profile.messages = json.dumps({'messages':user_messages})
         user.profile.save()

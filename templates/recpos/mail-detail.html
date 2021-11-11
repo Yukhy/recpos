@@ -16,9 +16,9 @@
                 <a class="btn btn-sm btn-secondary" href="{% url 'recpos:star' %}{{index}}/{{prev}}"><i class="bi bi-star"></i></a>
                 {% endif %}
                 {% if 'TRASH' in message.labels %}
-                <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-trash-fill"></i></a>
+                <a class="btn btn-sm btn-secondary" href="{% url 'recpos:putback' %}{{index}}/{{prev}}"><i class="bi bi-arrow-clockwise"></i></a>
                 {% else %}
-                <a class="btn btn-sm btn-secondary" href="#"><i class="bi bi-trash"></i></a>
+                <a class="btn btn-sm btn-secondary" href="{% url 'recpos:trash' %}{{index}}/{{prev}}"><i class="bi bi-trash"></i></a>
                 {% endif %}
             </div>
         </div>
