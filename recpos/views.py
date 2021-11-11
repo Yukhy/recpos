@@ -334,8 +334,10 @@ def index(request):
         'labels': json.loads(user.profile.labels),
         }
     if request.method == 'POST':
+        form1 = UserChangeForm(request.POST, instance=user)
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
-        if form2.is_valid():
+        if form1.is_valid() and form2.is_valid():
+            form1.save()
             form2.save()
             return redirect('recpos:index')
     
@@ -574,8 +576,6 @@ def login(request):
     user.profile.save()
     return redirect('recpos:index')
 
-def mail_detail(request):
-    return render(request, 'recpos/mail-detail.html')
 
 def opensource(request):
     return render(request, 'recpos/opensource.html')
