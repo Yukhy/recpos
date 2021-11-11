@@ -345,12 +345,34 @@ def index(request):
 
 @login_required
 def mailbox(request, label='INBOX', page=1):
-    # messageの更新
     user = request.user
     service = gmail_get_service(user)
     profile = user.profile
     user_email = user.email
     user_messages = json.loads(profile.messages)['messages']
+
+    if request.method == 'POST':
+        proc = request.POST.get('type')
+        indexes = request.POST.getlist('index', None)
+        if proc == 'star':
+            for index in indexes:
+                print("kita")
+                message = user_messages[int(index)]
+                mark_as_star(user_email, service, message['id'])
+                if 'STARRED' not in message['labels']:
+                    message['labels'].append('STARRED')
+                    user_messages[int(index)] = message
+        elif proc == 'trash':
+            for index in indexes:
+                message = user_messages[int(index)]
+                move_to_trash(user.email, service, message['id'], message['labels'])
+                if 'TRASH' not in message['labels']:
+                    message['labels'] = ['TRASH']
+                    user_messages[int(index)] = message
+        user.profile.messages = json.dumps({'messages':user_messages})
+        user.profile.save()
+
+    # messageの更新
     last_history_id = profile.last_history_id
     history_list, history_id = get_history_list(user_email, service, last_history_id)
     if history_list != []:
@@ -384,6 +406,7 @@ def mailbox(request, label='INBOX', page=1):
     data = {
         'messages': messages,
         'labels': labels,
+        'alias': False,
         'label': {'id': label, 'name': label_name},
         'page': {'now': str(page), 'prev': page-1, 'next': page+1},
         }
@@ -396,9 +419,30 @@ def alias(request, label='INBOX', page=1):
     profile = user.profile
     user_email = user.email
     user_alias = profile.alias
+    user_messages = json.loads(profile.messages)['messages']
+
+    if request.method == 'POST':
+        proc = request.POST.get('type')
+        indexes = request.POST.getlist('index', None)
+        if proc == 'star':
+            for index in indexes:
+                print("kita")
+                message = user_messages[int(index)]
+                mark_as_star(user_email, service, message['id'])
+                if 'STARRED' not in message['labels']:
+                    message['labels'].append('STARRED')
+                    user_messages[int(index)] = message
+        elif proc == 'trash':
+            for index in indexes:
+                message = user_messages[int(index)]
+                move_to_trash(user.email, service, message['id'], message['labels'])
+                if 'TRASH' not in message['labels']:
+                    message['labels'] = ['TRASH']
+                    user_messages[int(index)] = message
+        user.profile.messages = json.dumps({'messages':user_messages})
+        user.profile.save()
 
     # messageの更新
-    user_messages = json.loads(profile.messages)['messages']
     last_history_id = profile.last_history_id
     history_list, history_id = get_history_list(user_email, service, last_history_id)
     if history_list != []:
@@ -434,6 +478,7 @@ def alias(request, label='INBOX', page=1):
     data = {
         'messages': messages,
         'labels': labels,
+        'alias': True,
         'label': {'id': label, 'name': label_name},
         'page': {'now': str(page), 'prev': page-1, 'next': page+1},
         }
