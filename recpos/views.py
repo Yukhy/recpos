@@ -16,8 +16,8 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 import datetime
 
-MESSAGE_NUM = 20
-DEFAULT_SAVE_MESSAGE_NUM = 10
+MESSAGE_NUM = 100
+DEFAULT_SAVE_MESSAGE_NUM = 100
 DOMEIN = "http://localhost:8000/"
 
 
