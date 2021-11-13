@@ -596,8 +596,5 @@ def login(request):
     user.profile.save()
     return redirect('recpos:index')
 
-def mail_detail(request):
-    return render(request, 'recpos/mail-detail.html')
-
 def opensource(request):
     return render(request, 'recpos/opensource.html')
