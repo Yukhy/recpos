@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from .forms import UserChangeForm, ProfileChangeForm
 import sys
+import datetime
 
 MESSAGE_NUM = 20
 DEFAULT_SAVE_MESSAGE_NUM = 10
@@ -145,13 +146,13 @@ def get_message_content(user_email, service, id):
 
     for header in MessageDetail['payload']['headers']:
         # 日付、送信元、件名を取得する
-        if header['name'] == 'Date':
+        if header['name'] == 'Date' or header['name'] == 'date':
             date = decode_date(header['value'])
-        elif header['name'] == 'From':
-            from_address = header['value']
-        elif header['name'] == 'To':
+        elif header['name'] == 'From' or header['name'] == 'from':
+            from_address = decode_from_address(header['value'])
+        elif header['name'] == 'To' or header['name'] == 'to':
             to_address = header['value']
-        elif header['name'] == 'Subject':
+        elif header['name'] == 'Subject' or header['name'] == 'subject':
             subject = header['value']
 
     if 'data' in MessageDetail['payload']['body']:
@@ -248,26 +249,45 @@ def get_message_index(messages, id):
             break
     return index
 
-# 日付を読みやすい形に変換する
-def decode_date(date):
-    result = {}
-    month = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    result['year'] = int(re.search('\d{4}', date).group())
-    result['month'] = month.index(re.search('Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec', date).group())
-    result['date'] = int(re.search('\d{1,2}', date).group())
-    time = re.search('(\d{1,2}):(\d{1,2}):\d{1,2}', date)
-    result['hour'] = time.group(1)
-    result['minute'] = time.group(2)
-    return result
+#日付を読みやすい形に変換する
+def decode_date(receive_time):
+    month_list = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    year = int(re.search('\d{4}', receive_time).group())
+    month = month_list.index(re.search('Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec', receive_time).group())
+    date = int(re.search('\d{1,2}', receive_time).group())
+    time = re.search('(\d{1,2}):(\d{1,2}):(\d{1,2})', receive_time)
+    hour = int(time.group(1))
+    minute = int(time.group(2))
+    second = int(time.group(3))
+    rec_time = datetime.datetime(year, month, date, hour, minute, second)
+    time_dif = re.search('([-|+])(\d\d)00',receive_time)
+    if time_dif:
+        if time_dif.group(1) == '+':
+            hour_dif = 9-int(time_dif.group(2))
+        elif time_dif.group(1) == '-' :
+            hour_dif = 9+int(time_dif.group(2))
+        rec_time = rec_time + datetime.timedelta(hours=hour_dif)
+    year = rec_time.year
+    month = rec_time.month
+    date = rec_time.day
+    hour = rec_time.hour
+    if rec_time.minute < 10:
+        minute = '0' + str(rec_time.minute)
+    else:
+        minute = rec_time.minute
+    return {'year':year, 'month':month, 'date':date, 'hour':hour, 'minute':minute}
 
 # 送り主を読みやすい形に変換する
-def decode_address(address):
-    result = re.search('"?(.*?)"?\s?<(.*?)>',address)
-    from_address = {
-        'address': result.group(1),
-        'name': result.group(2),
-    }
-    return from_address
+def decode_from_address(from_address):
+    address_result = re.match(('"?(.*?)"? <(.*)@(.*)>'), from_address)
+    if address_result:
+        name = address_result.group(1)
+        address = address_result.group(2) + "@" + address_result.group(3)
+    else:
+        address_result = re.search('<?(.*)@(.*)>?', from_address)
+        name = address_result.group(1)
+        address = address_result.group(1) + "@" + address_result.group(2)
+    return {'name': name, 'from_address': address}
 
 # textをデコードする
 def base64_decode(b64_message):
