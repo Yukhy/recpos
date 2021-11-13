@@ -4,8 +4,6 @@
 
 {% block contents %}
 
-<form action="{% url 'recpos:index' %}" method="POST" class="p-0 col-md">
-        {% csrf_token %}
         <div class="px-2">
                 <!-- エイリアスメールアドレスが登録されていなかった場合に表示するカード -->
                 {% if not user.profile.alias %}
@@ -45,9 +43,6 @@
                                                 {{ userform.email }}
                                         </div>
                                 </div>
-                                <div>
-                                        <button type="submit" class="btn btn-primary">Change Profile</button>
-                                </div>
                         </div>
                 </div>
                 <div class="mb-3 card shadow rounded">
@@ -55,6 +50,8 @@
                                 <h6>Alias</h6>
                         </div>
                         <div class="card-body">
+                                <form action="{% url 'recpos:index' %}" method="POST" class="p-0 col-md">
+                                        {% csrf_token %}
                                 <div class="mb-3">
                                         <div class="input-group">
                                                 <span class="input-group-text">Alias</span>
@@ -76,11 +73,12 @@
                                 <div>
                                         <button type="submit" class="btn btn-primary">Change Alias</button>
                                 </div>
+                                </form>
                         </div>
                 </div>
 
         </div>
-</form>
+
 
 
 {% endblock %}
