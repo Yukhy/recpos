@@ -25,4 +25,5 @@ urlpatterns = [
     path('alias/mailbox/<str:label>/', views.alias, name="alias"),
     path('alias/mailbox/<str:label>/<int:page>/', views.alias, name="alias"),
     path('privacy-policy', views.privacy_policy, name="privacy-policy"),
+    path('open-source-license', views.opensource, name="open-source"),
 ]

@@ -32,8 +32,11 @@
             </div>
 
             <div>
-                {{message.text |linebreaksbr }}
-
+                {% if "!DOCTYPE html" in message.text %}
+                {{ message.text | safe}}
+                {% else %}
+                {{message.text | linebreaksbr}}
+                {% endif %}
             </div>
         </div>
     </div>

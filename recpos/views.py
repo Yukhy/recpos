@@ -595,3 +595,6 @@ def login(request):
     user.profile.labels = json.dumps(get_labels(user.email, service))
     user.profile.save()
     return redirect('recpos:index')
+
+def opensource(request):
+    return render(request, 'recpos/opensource.html')
