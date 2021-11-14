@@ -69,7 +69,7 @@
           <small class="o-nav-title mb-1 fw-bold">MAILBOX&ensp;<span class="badge bg-primary">Alias</span></small>
           <!--スイッチがTrueのときに↑のspanを表示-->
           <div class="form-check form-switch ms-auto">
-            <input class="form-check-input" type="checkbox" role="switch">
+            <input class="form-check-input ms-0" type="checkbox" role="switch">
           </div>
         </div>
         <ul class="navbar-nav justify-content-end">
@@ -78,39 +78,52 @@
                 class="bi bi-inbox"></i>&ensp;Inbox</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'STARRED' %}">&ensp;<i class="bi bi-star"></i>&ensp;Star</a>
+            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'STARRED' %}">&ensp;<i
+                class="bi bi-star"></i>&ensp;Star</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'SENT' %}">&ensp;<i class="bi bi-send"></i>&ensp;Sent</a>
+            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'SENT' %}">&ensp;<i
+                class="bi bi-send"></i>&ensp;Sent</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'TRASH' %}">&ensp;<i class="bi bi-trash"></i>&ensp;Trash</a>
+            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'TRASH' %}">&ensp;<i
+                class="bi bi-trash"></i>&ensp;Trash</a>
           </li>
-        {% for label in labels %}
+          {% for label in labels %}
           <!-- {% if label.type == user %} -->
           <li>
             <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-journal-text"></i>&ensp;aa{{label.name}}</a>
           </li>
           <!-- {% endif %} -->
-        {% endfor %}
+          {% endfor %}
         </ul>
       </div>
       <div class="mb-4">
-        <small class="o-nav-title mb-1 fw-bold">COMPANY LIST</small>
+        <small class="o-nav-title mb-1 fw-bold">RECPOS EXTENTIONS</small>
         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
           <li>
             <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-collection"></i>&ensp;Company List</a>
           </li>
-
+          <li>
+            <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-list-task"></i>&ensp;My Task</a>
+          </li>
         </ul>
       </div>
-      
+
     </div>
-    <footer>
-      <div class="text-center">
-        <a href="{% url 'recpos:privacy-policy' %}" class="nav-link d-inline px-2 py-0 rounded fw-normal small">Privacy Policy</a>
-        <a href="#" class="nav-link d-inline px-2 py-0 rounded fw-normal small">OpenSource License</a><br>
-        <small>Copyright © 2021 Ryuta Noguchi, Yukihiro Kozai</small>
+
+    <footer class="p-4">
+      <div class="card bg-primary bg-gradient mx-auto">
+        <div class="card-body text-center">
+          <h1 class="fw-bold">RECPOS</h1>
+          <a class="nav-link d-inline px-2 py-0 rounded fw-normal" href="https://github.com/Yukhy/recpos" target="_blank"><i
+              class="bi bi-github"></i></a><br>
+          <a href="{% url 'recpos:privacy-policy' %}"
+            class="nav-link d-inline px-2 py-0 rounded fw-normal small">Privacy Policy</a>
+          <a href="{% url 'recpos:open-source' %}"
+            class="nav-link d-inline px-2 py-0 rounded fw-normal small">Opensource Licenses</a><br>
+          <small>Copyright © 2021 Ryuta Noguchi, Yukihiro Kozai</small>
+        </div>
       </div>
     </footer>
   </aside>
@@ -146,13 +159,15 @@
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping1">Title</span>
-                  <input type="text" class="form-control" placeholder="Enter Title" aria-label="Title" aria-describedby="addon-wrapping1">
+                  <input type="text" class="form-control" placeholder="Enter Title" aria-label="Title"
+                    aria-describedby="addon-wrapping1">
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping2">Details</span>
-                  <textarea rows="6" class="form-control" placeholder="Add details" aria-label="Details" aria-describedby="addon-wrapping2"></textarea>
+                  <textarea rows="6" class="form-control" placeholder="Add details" aria-label="Details"
+                    aria-describedby="addon-wrapping2"></textarea>
                 </div>
               </div>
               <div class="mb-3">
@@ -180,7 +195,6 @@
         </div>
       </div>
     </div>
-
 
   </main>
   <!-- Bootstrap 5.1 -->
