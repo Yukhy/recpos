@@ -4,54 +4,54 @@
 
 {% block contents %}
 
-        <div class="px-2">
-                <!-- エイリアスメールアドレスが登録されていなかった場合に表示するカード -->
-                {% if not user.profile.alias %}
-                <div class="mb-3 card shadow rounded o-border-left-warning">
-                        <div class="card-body">
-                                <h5 class="card-title fw-bold mb-3">エイリアスメールアドレスの登録</h5>
-                                <p class="card-text">
-                                        RECPOSのデフォルトの設定ではGoogleアカウントで認証されたメールアドレスに基づいてメールを受信します。エイリアスの登録によって、使用用途を絞ったメール受信が可能になります。
-                                </p>
-                                <a href="#" class="card-link">エイリアスメールアドレスの作成</a><br class="d-md-none">
-                                <a href="#" class="card-link">RECPOSにエイリアスメールアドレスを登録</a>
-                        </div>
+<div class="col-md">
+        <!-- エイリアスメールアドレスが登録されていなかった場合に表示するカード -->
+        {% if not user.profile.alias %}
+        <div class="mb-3 card shadow rounded o-border-left-warning">
+                <div class="card-body">
+                        <h5 class="card-title fw-bold mb-3">エイリアスメールアドレスの登録</h5>
+                        <p class="card-text">
+                                RECPOSのデフォルトの設定ではGoogleアカウントで認証されたメールアドレスに基づいてメールを受信します。エイリアスの登録によって、使用用途を絞ったメール受信が可能になります。
+                        </p>
+                        <a href="#" class="card-link">エイリアスメールアドレスの作成</a><br class="d-md-none">
+                        <a href="#" class="card-link">RECPOSにエイリアスメールアドレスを登録</a>
                 </div>
-                {% endif %}
+        </div>
+        {% endif %}
 
-                <div class="mb-3 card shadow rounded">
-                        <div class="card-header">
-                                <h6>Profile</h6>
+        <div class="mb-3 card shadow rounded">
+                <div class="card-header">
+                        <h6>Profile</h6>
+                </div>
+                <div class="card-body">
+                        <div class="mb-3">
+                                <div class="input-group">
+                                        <span class="input-group-text">ユーザー名</span>
+                                        {{ userform.username }}
+                                </div>
                         </div>
-                        <div class="card-body">
-                                <div class="mb-3">
-                                        <div class="input-group">
-                                                <span class="input-group-text">ユーザー名</span>
-                                                {{ userform.username }}
-                                        </div>
+                        <div class="mb-3">
+                                <div class="input-group">
+                                        <span class="input-group-text">名前</span>
+                                        {{ userform.first_name }}
+                                        {{ userform.last_name }}
                                 </div>
-                                <div class="mb-3">
-                                        <div class="input-group">
-                                                <span class="input-group-text">名前</span>
-                                                {{ userform.first_name }}
-                                                {{ userform.last_name }}
-                                        </div>
-                                </div>
-                                <div class="mb-3">
-                                        <div class="input-group">
-                                                <span class="input-group-text">Gmail</span>
-                                                {{ userform.email }}
-                                        </div>
+                        </div>
+                        <div class="mb-3">
+                                <div class="input-group">
+                                        <span class="input-group-text">Gmail</span>
+                                        {{ userform.email }}
                                 </div>
                         </div>
                 </div>
-                <div class="mb-3 card shadow rounded">
-                        <div class="card-header">
-                                <h6>Alias</h6>
-                        </div>
-                        <div class="card-body">
-                                <form action="{% url 'recpos:index' %}" method="POST" class="p-0 col-md">
-                                        {% csrf_token %}
+        </div>
+        <div class="mb-3 card shadow rounded">
+                <div class="card-header">
+                        <h6>Alias</h6>
+                </div>
+                <div class="card-body">
+                        <form action="{% url 'recpos:index' %}" method="POST" class="p-0 col-md">
+                                {% csrf_token %}
                                 <div class="mb-3">
                                         <div class="input-group">
                                                 <span class="input-group-text">Alias</span>
@@ -73,11 +73,10 @@
                                 <div>
                                         <button type="submit" class="btn btn-primary">Change Alias</button>
                                 </div>
-                                </form>
-                        </div>
+                        </form>
                 </div>
-
         </div>
+</div>
 
 
 
