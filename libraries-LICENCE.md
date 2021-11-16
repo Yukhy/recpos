@@ -7,4 +7,4 @@ Copyright (c) Django Software Foundation and individual contributors. All rights
 ## Python Social Auth
 Copyright (c) 2012-2016, Matías Aguirre All rights reserved.
 
-Thanks to the other libraries, the producers of the libraries, and all the contributors.
+**Thanks to the other libraries, the producers of the libraries, and all the contributors.**
