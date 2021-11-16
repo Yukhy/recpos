@@ -579,3 +579,9 @@ def login(request):
 
 def opensource(request):
     return render(request, 'recpos/opensource.html')
+
+def company_list(request):
+    return render(request, 'recpos/company-list.html')
+
+def my_task(request):
+    return render(request, 'recpos/my-task.html')
