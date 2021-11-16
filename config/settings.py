@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from .secret import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'dh08m0m3h&-cer=5n3=d!3omkw1n28r55ldpz&8cdb_$&)8w2)'
+SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -179,4 +180,4 @@ SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
 # SCOPEの設定
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
 
-REFRESH_TOKEN = "1//0e5sNzCwZpSrhCgYIARAAGA4SNwF-L9IraT-489eVlsCIUznGR_yH8rZaTxvh-cBkLsstNGp0vRA_3QmKiGGDv9Dxw-dCXCQpyOA"
+REFRESH_TOKEN = refresh_token
