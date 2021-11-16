@@ -149,8 +149,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # recposのOAUTHキー
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1052987790612-n086ahfbueij51j0qt3tmbi5ud8t74e5.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ZmxGsmlVb1JXxZj8jLpFjkGk'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = social_auth_google_oauth2_key
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = social_auth_google_oauth2_secret
 
 SOCIAL_AUTH_URL_NAMESPACE = "accounts:social"
 
