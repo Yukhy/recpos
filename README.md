@@ -50,11 +50,9 @@
 
 - メールの送信機能
 
-[無題](https://www.notion.so/f25ab79a1eca4bd38fefb5c6de9c9616)
-
 ## **データベース設計**
 
-![RECPOS_db.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/6ef8d6dc-60a5-421a-9965-86519ec94170/RECPOS_db.png)
+![RECPOS_db.png](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/6ef8d6dc-60a5-421a-9965-86519ec94170/RECPOS_db.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20211116%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20211116T133134Z&X-Amz-Expires=86400&X-Amz-Signature=65de68e2f146f0a67f84ac24dc58726efc2501016f6f66a6cc76a9d718d77f24&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22RECPOS_db.png%22)
 
 ## **ローカルでの動作方法**
 
