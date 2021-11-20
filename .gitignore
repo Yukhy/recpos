@@ -7,3 +7,4 @@ __pycache__
 *@*.json
 *initial.py
 credentials.json
+secret.py
