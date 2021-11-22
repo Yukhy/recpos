@@ -69,24 +69,24 @@
           <small class="o-nav-title mb-1 fw-bold">MAILBOX&ensp;<span class="badge bg-primary">Alias</span></small>
           <!--スイッチがTrueのときに↑のspanを表示-->
           <div class="form-check form-switch ms-auto">
-            <input class="form-check-input ms-0" type="checkbox" role="switch">
+            <input class="form-check-input ms-0" type="checkbox" role="switch" id="alias">
           </div>
         </div>
         <ul class="navbar-nav justify-content-end">
           <li>
-            <a class="nav-link rounded active" aria-current="page" href="{% url 'recpos:mailbox' 'INBOX' %}">&ensp;<i
+            <a class="nav-link rounded active" aria-current="page" href="javascript:ToMailbox('INBOX');">&ensp;<i
                 class="bi bi-inbox"></i>&ensp;Inbox</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'STARRED' %}">&ensp;<i
+            <a class="nav-link rounded" href="javascript:ToMailbox('STARRED');">&ensp;<i
                 class="bi bi-star"></i>&ensp;Star</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'SENT' %}">&ensp;<i
+            <a class="nav-link rounded" href="javascript:ToMailbox('SENT');">&ensp;<i
                 class="bi bi-send"></i>&ensp;Sent</a>
           </li>
           <li>
-            <a class="nav-link rounded" href="{% url 'recpos:mailbox' 'TRASH' %}">&ensp;<i
+            <a class="nav-link rounded" href="javascript:ToMailbox('TRASH');">&ensp;<i
                 class="bi bi-trash"></i>&ensp;Trash</a>
           </li>
           {% for label in labels %}
@@ -188,6 +188,17 @@
     </div>
 
   </main>
+  <script>
+    function ToMailbox(url){
+      if (checkAlias.checked){
+        location.href = 'http://localhost:8000/alias/mailbox/' + url;
+      }
+      else {
+        location.href = 'http://localhost:8000/mailbox/' + url;
+      }
+    }
+    let checkAlias = document.getElementById('alias');
+  </script>
   <!-- Bootstrap 5.1 -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
