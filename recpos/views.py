@@ -16,8 +16,8 @@ from .forms import UserChangeForm, ProfileChangeForm
 import sys
 import datetime
 
-MESSAGE_NUM = 100
-DEFAULT_SAVE_MESSAGE_NUM = 100
+MESSAGE_NUM = 20
+DEFAULT_SAVE_MESSAGE_NUM = 30
 DOMEIN = "http://localhost:8000/"
 
 
@@ -413,6 +413,8 @@ def mailbox(request, label='INBOX', page=1):
     inbox_message, index_list = filter_label_message(user_messages, label, MESSAGE_NUM, page)
     messages = []
     num_msg = len(inbox_message)
+    if num_msg <= MESSAGE_NUM*(page-1):
+        return redirect(DOMEIN + 'mailbox/' + label)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
@@ -423,12 +425,21 @@ def mailbox(request, label='INBOX', page=1):
         inbox_message[i]['url'] = "l" + str(label_index) + "p" + str(page)
         messages.append(inbox_message[i])
 
+    if page == 0:
+        prev = None
+    else:
+        prev = page-1
+    if num_msg <= MESSAGE_NUM*page:
+        next = None
+    else:
+        next = page+1
+
     data = {
         'messages': messages,
         'labels': labels,
         'alias': False,
         'label': {'id': label, 'name': label_name},
-        'page': {'now': str(page), 'prev': page-1, 'next': page+1},
+        'page': {'now': str(page), 'prev': prev, 'next': next},
         }
     return render(request, 'recpos/mailbox.html', data)
 
@@ -485,6 +496,8 @@ def alias(request, label='INBOX', page=1):
     alias_message, index_list = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
     messages = []
     num_msg = len(alias_message)
+    if num_msg <= MESSAGE_NUM*(page-1):
+        return redirect(DOMEIN + 'mailbox/' + label)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
             break
@@ -495,12 +508,21 @@ def alias(request, label='INBOX', page=1):
         alias_message[i]['url'] = "A" + "l" + str(label_index) + "p" + str(page)
         messages.append(alias_message[i])
 
+    if page == 0:
+        prev = None
+    else:
+        prev = page-1
+    if num_msg <= MESSAGE_NUM*page:
+        next = None
+    else:
+        next = page+1
+
     data = {
         'messages': messages,
         'labels': labels,
         'alias': True,
         'label': {'id': label, 'name': label_name},
-        'page': {'now': str(page), 'prev': page-1, 'next': page+1},
+        'page': {'now': str(page), 'prev': prev, 'next': next},
         }
     return render(request, 'recpos/mailbox.html', data)
 

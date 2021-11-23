@@ -28,21 +28,25 @@
                         {% if not alias %}
                         <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.now}}"
                             class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
-                        {% if page.now != '1' %}
+                        {% if page.prev %}
                         <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.prev}}"
                             class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
                         {% endif %}
+                        {% if page.next %}
                         <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.next}}"
                             class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+                        {% endif %}
                         {% else %}
                         <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.now}}" class="btn btn-sm btn-secondary"><i
                                 class="bi bi-arrow-clockwise"></i></a>
-                        {% if page.now != '1' %}
+                        {% if page.prev %}
                         <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.prev}}" class="btn btn-sm btn-secondary"><i
                                 class="bi bi-chevron-left"></i></a>
                         {% endif %}
+                        {% if page.next %}
                         <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.next}}" class="btn btn-sm btn-secondary"><i
                                 class="bi bi-chevron-right"></i></a>
+                        {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -97,14 +101,29 @@
                 </div>
                 <div class="card-footer d-flex">
                     <div class="ms-auto">
-                        <a onclick="window.location.reload(true);" class="btn btn-sm btn-secondary"><i
-                                class="bi bi-arrow-clockwise"></i></a>
-                        {% if page.now != '1' %}
+                        {% if not alias %}
+                        <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.now}}"
+                            class="btn btn-sm btn-secondary"><i class="bi bi-arrow-clockwise"></i></a>
+                        {% if page.prev %}
                         <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.prev}}"
                             class="btn btn-sm btn-secondary"><i class="bi bi-chevron-left"></i></a>
                         {% endif %}
+                        {% if page.next %}
                         <a href="{% url 'recpos:mailbox' %}{{label.id}}\{{page.next}}"
                             class="btn btn-sm btn-secondary"><i class="bi bi-chevron-right"></i></a>
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.now}}" class="btn btn-sm btn-secondary"><i
+                                class="bi bi-arrow-clockwise"></i></a>
+                        {% if page.prev %}
+                        <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.prev}}" class="btn btn-sm btn-secondary"><i
+                                class="bi bi-chevron-left"></i></a>
+                        {% endif %}
+                        {% if page.next %}
+                        <a href="{% url 'recpos:alias' %}{{label.id}}\{{page.next}}" class="btn btn-sm btn-secondary"><i
+                                class="bi bi-chevron-right"></i></a>
+                        {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </form>
