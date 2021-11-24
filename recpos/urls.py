@@ -28,4 +28,7 @@ urlpatterns = [
     path('opensource-licenses/', views.opensource, name="open-source"),
     path("company-list/", views.company_list, name="company-list"),
     path("my-task/", views.my_task, name="my-task"),
+
+    path("add-task/", views.add_task, name="add-task"),
+    path("register-event/", views.register_event, name="register-event"),
 ]
