@@ -4,7 +4,6 @@
 *.sqlite3
 __pycache__
 .DS_Store
-*@*.json
+*.json
 *initial.py
-credentials.json
 secret.py
