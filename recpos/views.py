@@ -12,13 +12,15 @@ import ast
 import json
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
-from .forms import UserChangeForm, ProfileChangeForm
+from .forms import ProfileChangeForm, RegisterEventForm, AddTaskForm
 import sys
 import datetime
 
 MESSAGE_NUM = 20
 DEFAULT_SAVE_MESSAGE_NUM = 30
 DOMEIN = "http://localhost:8000/"
+
+EVENT_AND_TASK_PARAMS = {'eventform': RegisterEventForm(), 'taskform': AddTaskForm()}
 
 
 class Message:
@@ -349,15 +351,13 @@ def decode_url(user_labels, omiturl):
 def index(request):
     user = request.user
     params = {
-        'userform': UserChangeForm(instance=user),
         'profileform': ProfileChangeForm(instance=user.profile),
         'labels': json.loads(user.profile.labels),
         }
+    params.update(EVENT_AND_TASK_PARAMS)
     if request.method == 'POST':
-        form1 = UserChangeForm(request.POST, instance=user)
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
-        if form1.is_valid() and form2.is_valid():
-            form1.save()
+        if form2.is_valid():
             form2.save()
             return redirect('recpos:index')
     
@@ -441,6 +441,7 @@ def mailbox(request, label='INBOX', page=1):
         'label': {'id': label, 'name': label_name},
         'page': {'now': str(page), 'prev': prev, 'next': next},
         }
+    data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mailbox.html', data)
 
 @login_required
@@ -524,6 +525,7 @@ def alias(request, label='INBOX', page=1):
         'label': {'id': label, 'name': label_name},
         'page': {'now': str(page), 'prev': prev, 'next': next},
         }
+    data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mailbox.html', data)
 
 @login_required
@@ -542,6 +544,7 @@ def mail_detail(request, index, prev):
         # 前のページに戻るためのURL
         'url': DOMEIN + decode_url(user_labels, prev),
     }
+    data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mail-detail.html', data)
 
 def star(request, index, prev):
@@ -622,7 +625,21 @@ def opensource(request):
     return render(request, 'recpos/opensource.html')
 
 def company_list(request):
-    return render(request, 'recpos/company-list.html')
+    return render(request, 'recpos/company-list.html', EVENT_AND_TASK_PARAMS)
 
 def my_task(request):
-    return render(request, 'recpos/my-task.html')
+    return render(request, 'recpos/my-task.html', EVENT_AND_TASK_PARAMS)
+
+def add_task(request):
+    if request.method == 'POST':
+        form = AddTaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+    return redirect(request.META['HTTP_REFERER'])
+
+def register_event(request):
+    if request.method == 'POST':
+        form = RegisterEventForm(request.POST)
+        if form.is_valid():
+            form.save()
+    return redirect(request.META['HTTP_REFERER'])

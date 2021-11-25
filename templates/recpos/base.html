@@ -28,7 +28,7 @@
       <div class="navbar-expand me-3">
         <ul class="navbar-nav d-flex align-items-center text-secondary">
           <li class="nav-item">
-            <a href="#" class="btn text-secondary nav-link o-create-card"><i class="bi bi-pencil-square"></i></a>
+            <a href="#" class="btn text-secondary nav-link o-create-card"><i class="bi bi-calendar4-event"></i></a>
           </li>
           <li class="nav-item">
             <a href="#" class="btn text-secondary nav-link o-task-card"><i class="bi bi-plus-square"></i></a>
@@ -100,7 +100,7 @@
       </div>
       <div class="mb-4">
         <small class="o-nav-title mb-1 fw-bold">RECPOS EXTENTIONS</small>
-        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+        <ul class="navbar-nav justify-content-end flex-grow-1">
           <li>
             <a class="nav-link rounded" href="{% url 'recpos:company-list' %}">&ensp;<i
                 class="bi bi-collection"></i>&ensp;Company List</a>
@@ -111,7 +111,6 @@
           </li>
         </ul>
       </div>
-
     </div>
 
     <footer class="p-4">
@@ -138,37 +137,36 @@
       {% endblock %}
 
       <!-- タスク -->
-      <div class=" col-md-4 inactive" id="task">
+      <div class=" col-md-4 mb-3 inactive" id="task">
         <div class="card shadow rounded">
           <div class="card-header d-flex flex-row align-items-center justify-content-between">
-            <h6>Tasks</h6>
+            <h6>Add Task</h6>
             <!-- ボタンが押されたらこのカードをクローズする -->
             <button class="btn p-0 o-task-card"><i class="bi bi-x"></i></button>
           </div>
           <div class="card-body">
-            <form action="#">
+            <form action="{% url 'recpos:add-task' %}" method="POST">
+              {% csrf_token %}
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping1">Title</span>
-                  <input type="text" class="form-control" placeholder="Enter Title" aria-label="Title"
-                    aria-describedby="addon-wrapping1">
+                  {{taskform.title}}
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping2">Details</span>
-                  <textarea rows="6" class="form-control" placeholder="Add details" aria-label="Details"
-                    aria-describedby="addon-wrapping2"></textarea>
+                  {{taskform.detail}}
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping3">Due to</span>
-                  <input type="date" class="form-control" aria-label="duetodate" aria-describedby="addon-wrapping3">
+                  {{taskform.deadline}}
                 </div>
               </div>
               <div>
-                <button type="submit" class="btn btn-primary">Add to Tasks</button>
+                <button type="submit" class="btn btn-primary">Add to Task</button>
               </div>
             </form>
           </div>
@@ -176,12 +174,39 @@
       </div>
 
       <!-- メール作成 -->
-      <div class="col-md-4 inactive" id="create">
+      <div class="col-md-4 mb-3 inactive" id="create">
         <div class="card shadow rounded">
           <div class="card-header d-flex flex-row align-items-center justify-content-between">
-            <h6>New Message</h6>
+            <h6>Register Event</h6>
             <!-- ボタンが押されたらこのカードをクローズする -->
             <button class="btn p-0 o-create-card"><i class="bi bi-x"></i></button>
+          </div>
+          <div class="card-body">
+            <form action="{% url 'recpos:register-event' %}" method="POST">
+              {% csrf_token %}
+              <div class="mb-3">
+                <div class="input-group flex-nowrap">
+                  <span class="input-group-text" id="addon-wrapping4">Title</span>
+                  {{eventform.title}}
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group flex-nowrap">
+                  <span class="input-group-text" id="addon-wrapping5">Details</span>
+                  {{eventform.detail}}
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group flex-nowrap">
+                  <span class="input-group-text" id="addon-wrapping6">Priod</span>
+                  {{eventform.start_date}}
+                  {{eventform.end_date}}
+                </div>
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary">Register Event</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
