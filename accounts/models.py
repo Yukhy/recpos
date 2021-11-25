@@ -13,6 +13,9 @@ class Profile(models.Model):
     labels = models.TextField(blank=True, null=True, default='{"labels": []}')
     last_history_id = models.CharField(blank=True, null=True, max_length=1024, default='')
 
+    def __str__(self):
+        return self.user.email
+
 # userが新規作成sされたときにProfileを作成する
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
