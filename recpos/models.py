@@ -5,11 +5,11 @@ from accounts.models import Profile
 class Company(models.Model):
     user_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="company")
     name = models.CharField(max_length=256)
-    email = models.EmailField(blank=True)
-    memo = models.CharField(max_length=1024)
+    email = models.EmailField(blank=True, null=True)
+    memo = models.CharField(blank=True, null=True, max_length=1024)
 
     def __str__(self):
-        return self.name + " : " + self.user_id.first_name + " " + self.user_id.last_name
+        return self.name + " : " + self.user_profile.user.email
 
     def event_sort(self):
         events = self.event.all().order_by('stat_date_time')
@@ -27,6 +27,9 @@ class Event(models.Model):
     end_date = models.DateField(blank=True, null=True, max_length=128)
     detail = models.TextField(blank=True, null=True, max_length=1024)
 
+    def __str__(self):
+        return self.title
+
 
 
 class Task(models.Model):
@@ -34,3 +37,6 @@ class Task(models.Model):
     title = models.CharField(max_length=256)
     deadline = models.DateField(blank=True, null=True, max_length=128)
     detail = models.TextField(blank=True, null=True, max_length=1024)
+
+    def __str__(self):
+        return self.title

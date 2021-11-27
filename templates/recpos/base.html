@@ -90,11 +90,11 @@
                 class="bi bi-trash"></i>&ensp;Trash</a>
           </li>
           {% for label in labels %}
-          <!-- {% if label.type == user %} -->
+          {% if label.type == "user" %}
           <li>
-            <a class="nav-link rounded" href="#">&ensp;<i class="bi bi-journal-text"></i>&ensp;aa{{label.name}}</a>
+            <a class="nav-link rounded" href="javascript:ToMailbox('{{label.name}}');">&ensp;<i class="bi bi-journal-text"></i>&ensp;{{label.name}}</a>
           </li>
-          <!-- {% endif %} -->
+          {% endif %}
           {% endfor %}
         </ul>
       </div>

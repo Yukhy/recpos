@@ -355,6 +355,7 @@ def index(request):
         'labels': json.loads(user.profile.labels),
         }
     params.update(EVENT_AND_TASK_PARAMS)
+    print(json.loads(user.profile.labels))
     if request.method == 'POST':
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
         if form2.is_valid():
@@ -402,15 +403,15 @@ def mailbox(request, label='INBOX', page=1):
     profile.save()
 
     labels = json.loads(profile.labels)
-    label_name = label
     label_index = label
+    label_id = label
     for l in labels:
-        if l['id'] == label:
-            label_name = l['name']
+        if l['name'] == label:
+            label_id = l['id']
             label_index = labels.index(l)
     
     # messageからMESSAGE_NUM件を表示する
-    inbox_message, index_list = filter_label_message(user_messages, label, MESSAGE_NUM, page)
+    inbox_message, index_list = filter_label_message(user_messages, label_id, MESSAGE_NUM, page)
     messages = []
     num_msg = len(inbox_message)
     if num_msg <= MESSAGE_NUM*(page-1) and page != 1:
@@ -438,7 +439,7 @@ def mailbox(request, label='INBOX', page=1):
         'messages': messages,
         'labels': labels,
         'alias': False,
-        'label': {'id': label, 'name': label_name},
+        'label': {'id': label_id, 'name': label},
         'page': {'now': str(page), 'prev': prev, 'next': next},
         }
     data.update(EVENT_AND_TASK_PARAMS)
@@ -487,14 +488,15 @@ def alias(request, label='INBOX', page=1):
         return redirect('recpos:mailbox')
 
     labels = json.loads(profile.labels)
-    label_name = label
+    label_index = label
+    label_id = label
     for l in labels:
-        if l['id'] == label:
-            label_name = l['name']
+        if l['name'] == label:
+            label_id = l['id']
             label_index = labels.index(l)
 
     # alias宛のmessageをMESSAGE_NUM件表示する
-    alias_message, index_list = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
+    alias_message, index_list = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label_id)
     messages = []
     num_msg = len(alias_message)
     if num_msg <= MESSAGE_NUM*(page-1) and page != 1:
@@ -522,7 +524,7 @@ def alias(request, label='INBOX', page=1):
         'messages': messages,
         'labels': labels,
         'alias': True,
-        'label': {'id': label, 'name': label_name},
+        'label': {'id': label_id, 'name': label},
         'page': {'now': str(page), 'prev': prev, 'next': next},
         }
     data.update(EVENT_AND_TASK_PARAMS)
