@@ -350,10 +350,13 @@ def decode_url(user_labels, omiturl):
 @login_required
 def index(request):
     user = request.user
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'profileform': ProfileChangeForm(instance=user.profile),
         'labels': json.loads(user.profile.labels),
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
         }
     data.update(EVENT_AND_TASK_PARAMS)
     if request.method == 'POST':
@@ -434,13 +437,16 @@ def mailbox(request, label='INBOX', page=1):
     else:
         next = page+1
 
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'messages': messages,
         'labels': labels,
         'alias': False,
         'label': {'id': label_id, 'name': label},
         'page': {'now': str(page), 'prev': prev, 'next': next},
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mailbox.html', data)
@@ -519,13 +525,17 @@ def alias(request, label='INBOX', page=1):
     else:
         next = page+1
 
+    
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'messages': messages,
         'labels': labels,
         'alias': True,
         'label': {'id': label_id, 'name': label},
         'page': {'now': str(page), 'prev': prev, 'next': next},
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mailbox.html', data)
@@ -539,13 +549,16 @@ def mail_detail(request, index, prev):
     if 'UNREAD' in message['labels']:
         service = gmail_get_service(request.user)
         mark_as_read(request.user.email, service, message['id'])
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'message': user_messages[index],
         'index': index,
         'prev': prev,
         'url': DOMEIN + decode_url(user_labels, prev), # 前のページに戻るためのURL
         'labels': json.loads(request.user.profile.labels),
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
     }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mail-detail.html', data)
@@ -603,9 +616,12 @@ def putback(request, index, prev):
     return redirect(DOMEIN + 'mailbox/detail/' + str(index) + '/' + prev + '/')
 
 def privacy_policy(request):
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'labels': json.loads(request.user.profile.labels),
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
         }
     return render(request, 'recpos/privacy-policy.html', data)
     
@@ -629,24 +645,33 @@ def login(request):
     return redirect('recpos:index')
 
 def opensource(request):
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'labels': json.loads(request.user.profile.labels),
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
         }
     return render(request, 'recpos/opensource.html', data)
 
 def company_list(request):
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'labels': json.loads(request.user.profile.labels),
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/company-list.html', data)
 
 def my_task(request):
+    companies = []
+    for company in request.user.profile.company.all():
+        companies.append({'name':company.name, 'id':company.id})
     data = {
         'labels': json.loads(request.user.profile.labels),
-        'companies': request.user.profile.company.all(),
+        'companies': companies,
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/my-task.html', data)

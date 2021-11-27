@@ -148,9 +148,14 @@
             <form action="{% url 'recpos:add-task' %}" method="POST">
               {% csrf_token %}
               <div class="mb-3">
-                <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping1">Company</span>
-                  {{eventform.owner_company}}
+                <div class="input-group">
+                  <label class="input-group-text" for="inputGroupSelect01">Options</label>
+                  <select class="form-select" id="inputGroupSelect01">
+                    <option selected>Choose...</option>
+                    {% for company in companies %}
+                    <option value="{{company.id}}">{{company.name}}</option>
+                    {% endfor %}
+                  </select>
                 </div>
               </div>
               <div class="mb-3">
@@ -190,12 +195,7 @@
           <div class="card-body">
             <form action="{% url 'recpos:register-event' %}" method="POST">
               {% csrf_token %}
-              <div class="mb-3">
-                <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping5">Company</span>
-                  {{eventform.owner_company}}
-                </div>
-              </div>
+              
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping6">Title</span>
