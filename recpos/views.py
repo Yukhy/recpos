@@ -413,7 +413,7 @@ def mailbox(request, label='INBOX', page=1):
     inbox_message, index_list = filter_label_message(user_messages, label, MESSAGE_NUM, page)
     messages = []
     num_msg = len(inbox_message)
-    if num_msg <= MESSAGE_NUM*(page-1):
+    if num_msg <= MESSAGE_NUM*(page-1) and page != 1:
         return redirect(DOMEIN + 'mailbox/' + label)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
@@ -497,7 +497,7 @@ def alias(request, label='INBOX', page=1):
     alias_message, index_list = get_alias_message(user_alias,user_messages, MESSAGE_NUM, page, label)
     messages = []
     num_msg = len(alias_message)
-    if num_msg <= MESSAGE_NUM*(page-1):
+    if num_msg <= MESSAGE_NUM*(page-1) and page != 1:
         return redirect(DOMEIN + 'mailbox/' + label)
     for i in range(MESSAGE_NUM*(page-1),MESSAGE_NUM*(page)):
         if i >= num_msg:
