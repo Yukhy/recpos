@@ -350,19 +350,18 @@ def decode_url(user_labels, omiturl):
 @login_required
 def index(request):
     user = request.user
-    params = {
+    data = {
         'profileform': ProfileChangeForm(instance=user.profile),
         'labels': json.loads(user.profile.labels),
         }
-    params.update(EVENT_AND_TASK_PARAMS)
-    print(json.loads(user.profile.labels))
+    data.update(EVENT_AND_TASK_PARAMS)
     if request.method == 'POST':
         form2 = ProfileChangeForm(request.POST, instance=user.profile)
         if form2.is_valid():
             form2.save()
             return redirect('recpos:index')
     
-    return render(request, 'recpos/index.html', params)
+    return render(request, 'recpos/index.html', data)
 
 @login_required
 def mailbox(request, label='INBOX', page=1):
@@ -377,7 +376,6 @@ def mailbox(request, label='INBOX', page=1):
         indexes = request.POST.getlist('index', None)
         if proc == 'star':
             for index in indexes:
-                print("kita")
                 message = user_messages[int(index)]
                 mark_as_star(user_email, service, message['id'])
                 if 'STARRED' not in message['labels']:
@@ -459,7 +457,6 @@ def alias(request, label='INBOX', page=1):
         indexes = request.POST.getlist('index', None)
         if proc == 'star':
             for index in indexes:
-                print("kita")
                 message = user_messages[int(index)]
                 mark_as_star(user_email, service, message['id'])
                 if 'STARRED' not in message['labels']:
@@ -545,6 +542,7 @@ def mail_detail(request, index, prev):
         'prev': prev,
         # 前のページに戻るためのURL
         'url': DOMEIN + decode_url(user_labels, prev),
+        'labels': json.loads(request.user.profile.labels),
     }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mail-detail.html', data)
@@ -602,7 +600,10 @@ def putback(request, index, prev):
     return redirect(DOMEIN + 'mailbox/detail/' + str(index) + '/' + prev + '/')
 
 def privacy_policy(request):
-    return render(request, 'recpos/privacy-policy.html')
+    data = {
+        'labels': json.loads(request.user.profile.labels),
+        }
+    return render(request, 'recpos/privacy-policy.html', data)
     
 def login(request):
     user = request.user
@@ -624,13 +625,24 @@ def login(request):
     return redirect('recpos:index')
 
 def opensource(request):
-    return render(request, 'recpos/opensource.html')
+    data = {
+        'labels': json.loads(request.user.profile.labels),
+        }
+    return render(request, 'recpos/opensource.html', data)
 
 def company_list(request):
-    return render(request, 'recpos/company-list.html', EVENT_AND_TASK_PARAMS)
+    data = {
+        'labels': json.loads(request.user.profile.labels),
+        }
+    data.update(EVENT_AND_TASK_PARAMS)
+    return render(request, 'recpos/company-list.html', data)
 
 def my_task(request):
-    return render(request, 'recpos/my-task.html', EVENT_AND_TASK_PARAMS)
+    data = {
+        'labels': json.loads(request.user.profile.labels),
+        }
+    data.update(EVENT_AND_TASK_PARAMS)
+    return render(request, 'recpos/my-task.html', data)
 
 def add_task(request):
     if request.method == 'POST':

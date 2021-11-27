@@ -9,7 +9,7 @@ class Company(models.Model):
     memo = models.CharField(blank=True, null=True, max_length=1024)
 
     def __str__(self):
-        return self.name + " : " + self.user_profile.user.email
+        return self.name
 
     def event_sort(self):
         events = self.event.all().order_by('stat_date_time')
@@ -21,10 +21,10 @@ class Company(models.Model):
 
 
 class Event(models.Model):
-    #owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="event")
+    owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="event")
     title = models.CharField(max_length=256)
-    start_date = models.DateField(blank=True, null=True, max_length=128)
-    end_date = models.DateField(blank=True, null=True, max_length=128)
+    start_date = models.DateField(max_length=128)
+    end_date = models.DateField(max_length=128)
     detail = models.TextField(blank=True, null=True, max_length=1024)
 
     def __str__(self):
@@ -33,7 +33,7 @@ class Event(models.Model):
 
 
 class Task(models.Model):
-    #owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="task")
+    owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="task")
     title = models.CharField(max_length=256)
     deadline = models.DateField(blank=True, null=True, max_length=128)
     detail = models.TextField(blank=True, null=True, max_length=1024)

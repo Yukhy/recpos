@@ -181,3 +181,5 @@ SOCIAL_AUTH_GOOGLE_PLUS_AUTH_EXTRA_ARGUMENTS = {
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/gmail.modify']
 
 REFRESH_TOKEN = refresh_token
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'

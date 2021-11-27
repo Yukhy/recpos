@@ -149,19 +149,25 @@
               {% csrf_token %}
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping1">Title</span>
+                  <span class="input-group-text" id="addon-wrapping1">Company</span>
+                  {{eventform.owner_company}}
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group flex-nowrap">
+                  <span class="input-group-text" id="addon-wrapping2">Title</span>
                   {{taskform.title}}
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping2">Details</span>
+                  <span class="input-group-text" id="addon-wrapping3">Details</span>
                   {{taskform.detail}}
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping3">Due to</span>
+                  <span class="input-group-text" id="addon-wrapping4">Due to</span>
                   {{taskform.deadline}}
                 </div>
               </div>
@@ -173,7 +179,7 @@
         </div>
       </div>
 
-      <!-- メール作成 -->
+      <!-- イベント -->
       <div class="col-md-4 mb-3 inactive" id="create">
         <div class="card shadow rounded">
           <div class="card-header d-flex flex-row align-items-center justify-content-between">
@@ -186,19 +192,25 @@
               {% csrf_token %}
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping4">Title</span>
+                  <span class="input-group-text" id="addon-wrapping5">Company</span>
+                  {{eventform.owner_company}}
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group flex-nowrap">
+                  <span class="input-group-text" id="addon-wrapping6">Title</span>
                   {{eventform.title}}
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping5">Details</span>
+                  <span class="input-group-text" id="addon-wrapping7">Details</span>
                   {{eventform.detail}}
                 </div>
               </div>
               <div class="mb-3">
                 <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="addon-wrapping6">Priod</span>
+                  <span class="input-group-text" id="addon-wrapping8">Priod</span>
                   {{eventform.start_date}}
                   {{eventform.end_date}}
                 </div>
