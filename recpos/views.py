@@ -353,6 +353,7 @@ def index(request):
     data = {
         'profileform': ProfileChangeForm(instance=user.profile),
         'labels': json.loads(user.profile.labels),
+        'companies': request.user.profile.company.all(),
         }
     data.update(EVENT_AND_TASK_PARAMS)
     if request.method == 'POST':
@@ -439,6 +440,7 @@ def mailbox(request, label='INBOX', page=1):
         'alias': False,
         'label': {'id': label_id, 'name': label},
         'page': {'now': str(page), 'prev': prev, 'next': next},
+        'companies': request.user.profile.company.all(),
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mailbox.html', data)
@@ -523,6 +525,7 @@ def alias(request, label='INBOX', page=1):
         'alias': True,
         'label': {'id': label_id, 'name': label},
         'page': {'now': str(page), 'prev': prev, 'next': next},
+        'companies': request.user.profile.company.all(),
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mailbox.html', data)
@@ -540,9 +543,9 @@ def mail_detail(request, index, prev):
         'message': user_messages[index],
         'index': index,
         'prev': prev,
-        # 前のページに戻るためのURL
-        'url': DOMEIN + decode_url(user_labels, prev),
+        'url': DOMEIN + decode_url(user_labels, prev), # 前のページに戻るためのURL
         'labels': json.loads(request.user.profile.labels),
+        'companies': request.user.profile.company.all(),
     }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/mail-detail.html', data)
@@ -602,6 +605,7 @@ def putback(request, index, prev):
 def privacy_policy(request):
     data = {
         'labels': json.loads(request.user.profile.labels),
+        'companies': request.user.profile.company.all(),
         }
     return render(request, 'recpos/privacy-policy.html', data)
     
@@ -627,12 +631,14 @@ def login(request):
 def opensource(request):
     data = {
         'labels': json.loads(request.user.profile.labels),
+        'companies': request.user.profile.company.all(),
         }
     return render(request, 'recpos/opensource.html', data)
 
 def company_list(request):
     data = {
         'labels': json.loads(request.user.profile.labels),
+        'companies': request.user.profile.company.all(),
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/company-list.html', data)
@@ -640,6 +646,7 @@ def company_list(request):
 def my_task(request):
     data = {
         'labels': json.loads(request.user.profile.labels),
+        'companies': request.user.profile.company.all(),
         }
     data.update(EVENT_AND_TASK_PARAMS)
     return render(request, 'recpos/my-task.html', data)

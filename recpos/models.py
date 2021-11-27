@@ -21,6 +21,7 @@ class Company(models.Model):
 
 
 class Event(models.Model):
+    user_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="company")
     owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="event")
     title = models.CharField(max_length=256)
     start_date = models.DateField(max_length=128)
@@ -33,6 +34,7 @@ class Event(models.Model):
 
 
 class Task(models.Model):
+    user_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="company")
     owner_company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="task")
     title = models.CharField(max_length=256)
     deadline = models.DateField(blank=True, null=True, max_length=128)
