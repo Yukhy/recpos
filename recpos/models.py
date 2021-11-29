@@ -11,17 +11,9 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
-    def event_sort(self):
-        events = self.event.all().order_by('stat_date_time')
-        return events
-
-    def task_sort(self):
-        tasks = self.task.all().order_by('deadline')
-        return tasks
-
 
 class Event(models.Model):
-    #profile_id = models.IntegerField()
+    profile_id = models.IntegerField()
     company_id = models.IntegerField()
     title = models.CharField(max_length=256)
     start_date = models.DateField(max_length=128)
@@ -31,10 +23,13 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+    def to_dict(self):
+        return {'titel':self.title, 'start_date':self.start_date, 'end_date':self.end_date, 'detail':self.detail}
+
 
 
 class Task(models.Model):
-    #profile_id = models.IntegerField()
+    profile_id = models.IntegerField()
     company_id = models.IntegerField()
     title = models.CharField(max_length=256)
     deadline = models.DateField(blank=True, null=True, max_length=128)
@@ -42,3 +37,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+    def to_dict(self):
+        return {'titel':self.title, 'deadline':self.deadline, 'detail':self.detail}

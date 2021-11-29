@@ -13,6 +13,7 @@ import json
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from .forms import ProfileChangeForm, RegisterEventForm, AddTaskForm
+from .models import Company, Event, Task
 import sys
 import datetime
 
@@ -347,6 +348,16 @@ def decode_url(user_labels, omiturl):
         url += user_labels[int(labelpage.group(1))]['name'] + '/' + str(labelpage.group(2)) + '/'
     return url
 
+# CompanyのTaskとEventをリストで返す
+def get_event_task(company):
+    events = []
+    for event in Event.objects.filter(company_id=company.id):
+        events.append(event.to_dict())
+    tasks = []
+    for task in Task.objects.filter(company_id=company.id):
+        tasks.append(task.to_dict())
+    return events, tasks
+
 @login_required
 def index(request):
     user = request.user
@@ -656,13 +667,18 @@ def opensource(request):
 
 def company_list(request):
     companies = []
-    for company in request.user.profile.company.all():
-        companies.append({'name':company.name, 'id':company.id})
+    company_list = request.user.profile.company.all()
+    for company in company_list:
+        memo = company.memo
+        events, tasks = get_event_task(company)
+        companies.append({'name':company.name, 'id':company.id, 'memo':memo, 'events': events, 'tasks':tasks})
     data = {
         'labels': json.loads(request.user.profile.labels),
         'companies': companies,
         }
     data.update(EVENT_AND_TASK_PARAMS)
+
+
     return render(request, 'recpos/company-list.html', data)
 
 def my_task(request):
@@ -674,6 +690,7 @@ def my_task(request):
         'companies': companies,
         }
     data.update(EVENT_AND_TASK_PARAMS)
+
     return render(request, 'recpos/my-task.html', data)
 
 def add_task(request):
