@@ -671,6 +671,7 @@ def company_list(request):
     for company in company_list:
         memo = company.memo
         events, tasks = get_event_task(company)
+        # eventsとtasksをソートする処理をここに入れる
         if events != []:
             event = events[0]
         else :
@@ -691,11 +692,25 @@ def company_list(request):
 
 def my_task(request):
     companies = []
+    events = [ {
+            'title': event.title,
+            'start': event.start_date.strftime("%Y-%m-%d"),
+            'end':event.end_date.strftime("%Y-%m-%d"),
+        }
+        for event in Event.objects.filter(profile_id=request.user.profile.id).all()
+        ]
+    tasks = [ {
+            'title': task.title,
+            'start': task.deadline.strftime("%Y-%m-%d"),
+        }
+        for task in Task.objects.filter(profile_id=request.user.profile.id).exclude(deadline=None).all()
+        ]
     for company in request.user.profile.company.all():
         companies.append({'name':company.name, 'id':company.id})
     data = {
         'labels': json.loads(request.user.profile.labels),
         'companies': companies,
+        'event_data': events+tasks,
         }
     data.update(EVENT_AND_TASK_PARAMS)
 
