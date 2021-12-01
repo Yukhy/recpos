@@ -671,7 +671,15 @@ def company_list(request):
     for company in company_list:
         memo = company.memo
         events, tasks = get_event_task(company)
-        companies.append({'name':company.name, 'id':company.id, 'memo':memo, 'events': events, 'tasks':tasks})
+        if events != []:
+            event = events[0]
+        else :
+            event = None
+        if tasks != []:
+            task = tasks[0]
+        else :
+            task = None
+        companies.append({'name':company.name, 'id':company.id, 'memo':memo, 'event': event, 'task':task})
     data = {
         'labels': json.loads(request.user.profile.labels),
         'companies': companies,

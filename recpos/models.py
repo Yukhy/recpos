@@ -24,7 +24,7 @@ class Event(models.Model):
         return self.title
 
     def to_dict(self):
-        return {'titel':self.title, 'start_date':self.start_date, 'end_date':self.end_date, 'detail':self.detail}
+        return {'title':self.title, 'start_date':self.start_date, 'end_date':self.end_date, 'detail':self.detail}
 
 
 
@@ -39,4 +39,4 @@ class Task(models.Model):
         return self.title
 
     def to_dict(self):
-        return {'titel':self.title, 'deadline':self.deadline, 'detail':self.detail}
+        return {'title':self.title, 'deadline':self.deadline, 'detail':self.detail}

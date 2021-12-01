@@ -77,7 +77,7 @@
                                     <a class="nav-link active" id="nav-home-tab-{{company.id}}" data-bs-toggle="tab" href="#nav-detail-{{company.id}}"
                                         role="tab" aria-controls="nav-home-{{company.id}}" aria-selected="true">Detail</a>
                                     <a class="nav-link" id="nav-profile-tab-{{company.id}}" data-bs-toggle="tab" href="#nav-tasks-{{company.id}}"
-                                        role="tab" aria-controls="nav-profile-{{company.id}}" aria-selected="false">My Tasks</a>
+                                        role="tab" aria-controls="nav-profile-{{company.id}}" aria-selected="false">My Task</a>
                                     <a class="nav-link" id="nav-contact-tab-{{company.id}}" data-bs-toggle="tab" href="#nav-event-{{company.id}}"
                                         role="tab" aria-controls="nav-contact-{{company.id}}" aria-selected="false">Event</a>
                                 </div>
@@ -89,14 +89,12 @@
                                 </div>
                                 <div class="tab-pane fade" id="nav-event-{{company.id}}" role="tabpanel"
                                     aria-labelledby="nav-contact-tab-{{company.id}}">
-                                    {{company.tasks}}
+                                    {{company.event.title}} {{company.event.start_date}} {{company.event.end_date}} {{nompany.event.detail}}
                                 </div>
-                                {% for event in company.events %}
                                 <div class="tab-pane fade" id="nav-tasks-{{company.id}}" role="tabpanel"
                                     aria-labelledby="nav-profile-tab-{{company.id}}">
-                                    {{event.title}}
+                                    {{company.task.title}} {{company.task.deadline}} {{company.task.detail}}
                                 </div>
-                                {% endfor %}
                             </div>
                         </div>
                     </div>
