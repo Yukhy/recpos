@@ -710,7 +710,7 @@ def my_task(request):
     data = {
         'labels': json.loads(request.user.profile.labels),
         'companies': companies,
-        'event_data': events+tasks,
+        'event_data': json.dumps(events+tasks),
         }
     data.update(EVENT_AND_TASK_PARAMS)
 
